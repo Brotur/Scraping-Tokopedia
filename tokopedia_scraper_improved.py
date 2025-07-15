@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 import json
 import random
 import re
+import unicodedata
+import string
 
 class TokopediaReviewScraperImproved:
     def __init__(self, headless=False):
@@ -527,12 +529,22 @@ class TokopediaReviewScraperImproved:
             if variant and "Varian:" in variant:
                 variant = variant.replace("Varian:", "").strip()
             
+            # Normalisasi data untuk analisis sentiment
+            normalized_review_text = self.normalize_text(review_text)
+            cleaned_reviewer_name = self.clean_reviewer_name(reviewer_name)
+            cleaned_variant = self.clean_variant(variant)
+            cleaned_date = self.clean_date(review_date)
+            
             return {
                 'rating': star_rating,
                 'reviewer_name': reviewer_name,
+                'reviewer_name_normalized': cleaned_reviewer_name,
                 'review_text': review_text,
+                'review_text_normalized': normalized_review_text,
                 'review_date': review_date,
+                'review_date_normalized': cleaned_date,
                 'variant': variant,
+                'variant_normalized': cleaned_variant,
                 'rating_filter': rating_filter,
                 'scraped_at': time.strftime('%Y-%m-%d %H:%M:%S')
             }
@@ -686,6 +698,18 @@ class TokopediaReviewScraperImproved:
                 print("\nSummary by filter applied:")
                 for filter_type, count in filter_summary.items():
                     print(f"Filter {filter_type}: {count} reviews")
+                    
+                # Print normalization info
+                print("\nData normalization summary:")
+                normalized_reviews = df['review_text_normalized'].notna().sum()
+                print(f"Reviews with normalized text: {normalized_reviews}")
+                
+                # Show example of normalized vs original text
+                if normalized_reviews > 0:
+                    print("\nExample of text normalization:")
+                    sample_row = df[df['review_text_normalized'].notna()].iloc[0]
+                    print(f"Original: {sample_row['review_text'][:100]}...")
+                    print(f"Normalized: {sample_row['review_text_normalized'][:100]}...")
         else:
             print("No data to save")
             
@@ -696,10 +720,155 @@ class TokopediaReviewScraperImproved:
                 json.dump(self.reviews_data, f, ensure_ascii=False, indent=2)
             print(f"Data also saved to {filename}")
             
+    def validate_normalized_data(self):
+        """Validasi data yang sudah dinormalisasi"""
+        if not self.reviews_data:
+            print("No data to validate")
+            return
+            
+        print("\n=== DATA NORMALIZATION VALIDATION ===")
+        
+        total_reviews = len(self.reviews_data)
+        normalized_count = 0
+        empty_normalized_count = 0
+        
+        for review in self.reviews_data:
+            if review.get('review_text_normalized'):
+                normalized_count += 1
+                if not review['review_text_normalized'].strip():
+                    empty_normalized_count += 1
+                    
+        print(f"Total reviews: {total_reviews}")
+        print(f"Reviews with normalized text: {normalized_count}")
+        print(f"Empty normalized text: {empty_normalized_count}")
+        print(f"Success rate: {(normalized_count/total_reviews*100):.1f}%")
+        
+        # Show examples of normalization
+        if normalized_count > 0:
+            print("\n=== NORMALIZATION EXAMPLES ===")
+            for i, review in enumerate(self.reviews_data[:3]):  # Show first 3 examples
+                if review.get('review_text_normalized'):
+                    print(f"\nExample {i+1}:")
+                    print(f"Original: {review['review_text']}")
+                    print(f"Normalized: {review['review_text_normalized']}")
+                    print(f"Length: {len(review['review_text'])} → {len(review['review_text_normalized'])}")
+                    
+    def get_sentiment_ready_data(self):
+        """Mendapatkan data yang siap untuk analisis sentiment"""
+        if not self.reviews_data:
+            return []
+            
+        sentiment_data = []
+        for review in self.reviews_data:
+            if review.get('review_text_normalized') and review['review_text_normalized'].strip():
+                sentiment_data.append({
+                    'rating': review['rating'],
+                    'text': review['review_text_normalized'],
+                    'reviewer': review.get('reviewer_name_normalized', ''),
+                    'variant': review.get('variant_normalized', ''),
+                    'date': review.get('review_date_normalized', ''),
+                    'original_text': review['review_text']
+                })
+                
+        return sentiment_data
+        
+    def save_sentiment_ready_data(self, filename='sentiment_ready_data.json'):
+        """Simpan data yang siap untuk analisis sentiment"""
+        sentiment_data = self.get_sentiment_ready_data()
+        
+        if sentiment_data:
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(sentiment_data, f, ensure_ascii=False, indent=2)
+            print(f"Sentiment-ready data saved to {filename}")
+            print(f"Total sentiment-ready reviews: {len(sentiment_data)}")
+            
+            # Buat juga versi CSV untuk sentiment analysis
+            df_sentiment = pd.DataFrame(sentiment_data)
+            csv_filename = filename.replace('.json', '.csv')
+            df_sentiment.to_csv(csv_filename, index=False, encoding='utf-8')
+            print(f"Sentiment-ready data also saved to {csv_filename}")
+        else:
+            print("No sentiment-ready data to save")
+            
     def close(self):
         """Close browser"""
         self.driver.quit()
 
+    def normalize_text(self, text):
+        """Normalisasi teks untuk analisis sentiment - hanya alfanumerikal dan spasi"""
+        if not text or not isinstance(text, str):
+            return ""
+            
+        try:
+            # Konversi ke lowercase
+            text = text.lower()
+            
+            # Hapus emoji dan karakter unicode khusus
+            text = ''.join(char for char in text if unicodedata.category(char) not in ['So', 'Sk', 'Sm', 'Sc'])
+            
+            # Hapus URL
+            text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', text)
+            
+            # Hapus mention (@username)
+            text = re.sub(r'@[A-Za-z0-9_]+', '', text)
+            
+            # Hapus hashtag (#hashtag)
+            text = re.sub(r'#[A-Za-z0-9_]+', '', text)
+            
+            # Hapus tanda baca kecuali spasi
+            text = re.sub(r'[^\w\s]', ' ', text)
+            
+            # Hapus angka yang berdiri sendiri
+            text = re.sub(r'\b\d+\b', '', text)
+            
+            # Normalisasi spasi (hapus spasi berlebih)
+            text = re.sub(r'\s+', ' ', text)
+            
+            # Trim whitespace
+            text = text.strip()
+            
+            return text
+            
+        except Exception as e:
+            print(f"Error normalizing text: {e}")
+            return ""
+            
+    def clean_reviewer_name(self, name):
+        """Bersihkan nama reviewer"""
+        if not name:
+            return ""
+        
+        # Hapus karakter khusus dan emoji
+        name = ''.join(char for char in name if unicodedata.category(char) not in ['So', 'Sk', 'Sm', 'Sc'])
+        
+        # Hanya alfanumerikal dan spasi
+        name = re.sub(r'[^\w\s]', ' ', name)
+        name = re.sub(r'\s+', ' ', name)
+        
+        return name.strip()
+        
+    def clean_variant(self, variant):
+        """Bersihkan informasi variant"""
+        if not variant:
+            return ""
+        
+        # Hapus karakter khusus
+        variant = re.sub(r'[^\w\s\-]', ' ', variant)
+        variant = re.sub(r'\s+', ' ', variant)
+        
+        return variant.strip()
+        
+    def clean_date(self, date):
+        """Bersihkan format tanggal"""
+        if not date:
+            return ""
+        
+        # Hapus karakter khusus, hanya biarkan alfanumerikal, spasi, dan tanda hubung
+        date = re.sub(r'[^\w\s\-]', ' ', date)
+        date = re.sub(r'\s+', ' ', date)
+        
+        return date.strip()
+        
 # Usage example
 if __name__ == "__main__":
     # URL produk Samsung Galaxy A16 5G
@@ -712,9 +881,15 @@ if __name__ == "__main__":
         # Scrape reviews for specific ratings with max 15 reviews per rating
         scraper.get_reviews_by_rating(product_url, target_ratings=[1, 2, 3, 4, 5], max_reviews_per_rating=15)
         
+        # Validasi data yang sudah dinormalisasi
+        scraper.validate_normalized_data()
+        
         # Save to CSV and JSON
         scraper.save_to_csv('huawei_matepad_reviews_improved.csv')
         scraper.save_to_json('huawei_matepad_reviews_improved.json')
+        
+        # Save sentiment-ready data
+        scraper.save_sentiment_ready_data('huawei_matepad_sentiment_ready.json')
         
     except Exception as e:
         print(f"Error: {e}")
