@@ -194,7 +194,7 @@ class TokopediaReviewScraperImproved:
                         active_filters.append(expected_rating)
                 except:
                     continue
-            
+        
             # Also check by label structure
             labels = self.driver.find_elements(By.CSS_SELECTOR, "label.checkbox")
             for label in labels:
@@ -210,17 +210,17 @@ class TokopediaReviewScraperImproved:
                                 break
                 except:
                     continue
-            
+        
             print(f"Active filters detected: {active_filters}")
             
             # If more than one filter is active, clear others
             if len(active_filters) > 1:
-                print(f"⚠️  Multiple filters active: {active_filters}. Clearing unwanted filters...")
+                print(f"[WARNING] Multiple filters active: {active_filters}. Clearing unwanted filters...")
                 self.clear_unwanted_filters(target_rating)
             elif len(active_filters) == 1 and active_filters[0] == target_rating:
-                print(f"✅ Only target filter {target_rating} is active")
+                print(f"[OK] Only target filter {target_rating} is active")
             else:
-                print(f"⚠️  Unexpected filter state: {active_filters}")
+                print(f"[WARNING] Unexpected filter state: {active_filters}")
                 
         except Exception as e:
             print(f"Error verifying exclusive filter: {e}")
@@ -443,7 +443,7 @@ class TokopediaReviewScraperImproved:
                         break
                 except:
                     continue
-            
+        
             if not review_articles:
                 print("No review articles found on this page")
                 return []
@@ -454,7 +454,7 @@ class TokopediaReviewScraperImproved:
             articles_to_process = review_articles
             if max_reviews:
                 articles_to_process = review_articles[:max_reviews]
-            
+        
             for i, article in enumerate(articles_to_process):
                 try:
                     print(f"Processing article {i+1}/{len(articles_to_process)}")
@@ -471,11 +471,11 @@ class TokopediaReviewScraperImproved:
                         if not is_duplicate:
                             self.reviews_data.append(review_data)
                             scraped_reviews.append(review_data)
-                            print(f"  ✓ Added review from {review_data['reviewer_name']}")
+                            print(f"  [OK] Added review from {review_data['reviewer_name']}")
                         else:
-                            print(f"  ⚠ Duplicate review from {review_data['reviewer_name']}")
+                            print(f"  [SKIP] Duplicate review from {review_data['reviewer_name']}")
                     else:
-                        print(f"  ✗ Failed to extract review from article {i+1}")
+                        print(f"  [ERROR] Failed to extract review from article {i+1}")
                         
                     # Stop if we've reached the limit
                     if max_reviews and len(scraped_reviews) >= max_reviews:
@@ -483,9 +483,9 @@ class TokopediaReviewScraperImproved:
                         break
                         
                 except Exception as e:
-                    print(f"  ✗ Error extracting review from article {i+1}: {e}")
+                    print(f"  [ERROR] Error extracting review from article {i+1}: {e}")
                     continue
-            
+        
             print(f"Scraped {len(scraped_reviews)} new reviews from current page")
             return scraped_reviews
             
@@ -528,6 +528,12 @@ class TokopediaReviewScraperImproved:
             # Clean variant text
             if variant and "Varian:" in variant:
                 variant = variant.replace("Varian:", "").strip()
+            
+            # Clean unicode characters to prevent encoding errors
+            reviewer_name = self.clean_unicode_chars(reviewer_name)
+            review_text = self.clean_unicode_chars(review_text)
+            review_date = self.clean_unicode_chars(review_date)
+            variant = self.clean_unicode_chars(variant)
             
             # Normalisasi data untuk analisis sentiment
             normalized_review_text = self.normalize_text(review_text)
@@ -682,7 +688,12 @@ class TokopediaReviewScraperImproved:
             # Remove duplicates based on reviewer name and review text
             df = df.drop_duplicates(subset=['reviewer_name', 'review_text', 'review_date'])
             
-            df.to_csv(filename, index=False, encoding='utf-8')
+            # Clean all text columns to prevent encoding issues
+            for col in df.columns:
+                if df[col].dtype == 'object':
+                    df[col] = df[col].astype(str).apply(self.clean_unicode_chars)
+            
+            df.to_csv(filename, index=False, encoding='utf-8-sig')
             print(f"Data saved to {filename}")
             print(f"Total unique reviews scraped: {len(df)}")
             
@@ -725,7 +736,7 @@ class TokopediaReviewScraperImproved:
         if not self.reviews_data:
             print("No data to validate")
             return
-            
+        
         print("\n=== DATA NORMALIZATION VALIDATION ===")
         
         total_reviews = len(self.reviews_data)
@@ -751,7 +762,7 @@ class TokopediaReviewScraperImproved:
                     print(f"\nExample {i+1}:")
                     print(f"Original: {review['review_text']}")
                     print(f"Normalized: {review['review_text_normalized']}")
-                    print(f"Length: {len(review['review_text'])} → {len(review['review_text_normalized'])}")
+                    print(f"Length: {len(review['review_text'])} -> {len(review['review_text_normalized'])}")
                     
     def get_sentiment_ready_data(self):
         """Mendapatkan data yang siap untuk analisis sentiment"""
@@ -777,15 +788,26 @@ class TokopediaReviewScraperImproved:
         sentiment_data = self.get_sentiment_ready_data()
         
         if sentiment_data:
+            # Clean data before saving
+            cleaned_data = []
+            for review in sentiment_data:
+                cleaned_review = {}
+                for key, value in review.items():
+                    if isinstance(value, str):
+                        cleaned_review[key] = self.clean_unicode_chars(value)
+                    else:
+                        cleaned_review[key] = value
+                cleaned_data.append(cleaned_review)
+            
             with open(filename, 'w', encoding='utf-8') as f:
-                json.dump(sentiment_data, f, ensure_ascii=False, indent=2)
+                json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
             print(f"Sentiment-ready data saved to {filename}")
-            print(f"Total sentiment-ready reviews: {len(sentiment_data)}")
+            print(f"Total sentiment-ready reviews: {len(cleaned_data)}")
             
             # Buat juga versi CSV untuk sentiment analysis
-            df_sentiment = pd.DataFrame(sentiment_data)
+            df_sentiment = pd.DataFrame(cleaned_data)
             csv_filename = filename.replace('.json', '.csv')
-            df_sentiment.to_csv(csv_filename, index=False, encoding='utf-8')
+            df_sentiment.to_csv(csv_filename, index=False, encoding='utf-8-sig')
             print(f"Sentiment-ready data also saved to {csv_filename}")
         else:
             print("No sentiment-ready data to save")
@@ -869,6 +891,40 @@ class TokopediaReviewScraperImproved:
         
         return date.strip()
         
+    def clean_unicode_chars(self, text):
+        """Clean unicode characters that cause encoding issues"""
+        if not text or not isinstance(text, str):
+            return ""
+            
+        # Replace problematic unicode characters
+        replacements = {
+            '\u2192': ' -> ',      # → arrow
+            '\u2190': ' <- ',      # ← arrow
+            '\u2713': '[OK]',      # ✓ check mark
+            '\u2717': '[X]',       # ✗ cross mark
+            '\u2705': '[OK]',      # ✅ check mark button
+            '\u26A0': '[!]',       # ⚠ warning sign
+            '\u2764': '[heart]',   # ❤ heart
+            '\u2665': '[heart]',   # ♥ heart
+            '\u2019': "'",         # ' right single quotation mark
+            '\u201C': '"',         # " left double quotation mark
+            '\u201D': '"',         # " right double quotation mark
+            '\u2026': '...',       # … ellipsis
+            '\u00A0': ' ',         # non-breaking space
+        }
+        
+        for unicode_char, replacement in replacements.items():
+            text = text.replace(unicode_char, replacement)
+        
+        # Remove any remaining problematic characters
+        try:
+            text.encode('cp1252')
+        except UnicodeEncodeError:
+            # Keep only ASCII characters if encoding fails
+            text = ''.join(char for char in text if ord(char) < 128)
+        
+        return text
+
 # Usage example
 if __name__ == "__main__":
     # URL produk Samsung Galaxy A16 5G
