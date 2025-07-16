@@ -609,147 +609,58 @@ class TokopediaReviewScraperImproved:
             return ""
 
     def expand_review_text(self, article):
-        """Find and click 'Selengkapnya' button to expand review text"""
+        """Find and click 'Selengkapnya' button to expand review text - AVOID 'Pelajari Selengkapnya'"""
         try:
-            # Multiple selectors for "Selengkapnya" button
-            selengkapnya_selectors = [
-                "button[data-testid='btnSelengkapnya']",
-                "button[data-testid='btnShowMore']",
-                "span[data-testid='btnSelengkapnya']",
-                "a[data-testid='btnSelengkapnya']",
-                "div[data-testid='btnSelengkapnya']",
-                "button[aria-label*='Selengkapnya']",
-                "button[aria-label*='Show more']",
-                "button[aria-label*='Lihat selengkapnya']",
-                "button.css-1k1relq-unf-heading",
-                "button.css-3017qm",
-                "span.css-1k1relq-unf-heading",
-                "span.css-3017qm",
-                "button[class*='selengkapnya']",
-                "span[class*='selengkapnya']"
-            ]
-            
-            # Text-based selectors using XPath
-            text_selectors = [
-                "//button[contains(text(), 'Selengkapnya')]",
-                "//span[contains(text(), 'Selengkapnya')]",
-                "//a[contains(text(), 'Selengkapnya')]",
-                "//div[contains(text(), 'Selengkapnya')]",
-                "//button[contains(text(), 'selengkapnya')]",
-                "//span[contains(text(), 'selengkapnya')]",
-                "//button[contains(text(), 'Show more')]",
-                "//span[contains(text(), 'Show more')]",
-                "//button[contains(text(), 'Lihat selengkapnya')]",
-                "//span[contains(text(), 'Lihat selengkapnya')]",
-                "//button[contains(text(), 'Lihat Selengkapnya')]",
-                "//span[contains(text(), 'Lihat Selengkapnya')]",
-                "//button[contains(text(), 'More')]",
-                "//span[contains(text(), 'More')]"
-            ]
-            
             button_clicked = False
             
-            # Try CSS selectors first
-            for selector in selengkapnya_selectors:
+            # Cari semua element yang mengandung text "Selengkapnya"
+            elements = article.find_elements(By.XPATH, ".//*[contains(text(), 'Selengkapnya')]")
+            
+            for element in elements:
                 try:
-                    buttons = article.find_elements(By.CSS_SELECTOR, selector)
-                    for button in buttons:
-                        if button.is_displayed() and button.is_enabled():
-                            button_text = button.text.strip().lower()
-                            if any(keyword in button_text for keyword in ['selengkapnya', 'show more', 'lihat', 'more']):
-                                print(f"Found 'Selengkapnya' button: {button.text}")
+                    element_text = element.text.strip()
+                    
+                    # FILTER KETAT: Hanya "Selengkapnya" murni, TOLAK "Pelajari Selengkapnya"
+                    if (element_text == "Selengkapnya" or element_text == "selengkapnya"):
+                        
+                        # Double check: pastikan tidak ada kata "Pelajari" di sekitar element
+                        parent_text = ""
+                        try:
+                            parent = element.find_element(By.XPATH, "./parent::*")
+                            parent_text = parent.text.lower()
+                        except:
+                            pass
+                        
+                        # Jika tidak ada "pelajari" di parent, maka aman untuk diklik
+                        if "pelajari" not in parent_text:
+                            print(f"Found safe 'Selengkapnya' button: {element_text}")
+                            
+                            if element.is_displayed() and element.is_enabled():
                                 try:
-                                    # Scroll to button
-                                    self.scroll_to_element(button)
+                                    self.scroll_to_element(element)
                                     time.sleep(0.5)
-                                    
-                                    # Try clicking
-                                    button.click()
+                                    element.click()
                                     button_clicked = True
-                                    print("  [OK] Successfully clicked 'Selengkapnya' button")
+                                    print("  [OK] Successfully clicked safe 'Selengkapnya' button")
                                     time.sleep(1)
                                     break
                                 except:
                                     try:
-                                        # Try JavaScript click
-                                        self.driver.execute_script("arguments[0].click();", button)
+                                        self.driver.execute_script("arguments[0].click();", element)
                                         button_clicked = True
-                                        print("  [OK] Successfully clicked 'Selengkapnya' button (JS)")
+                                        print("  [OK] Successfully clicked safe 'Selengkapnya' button (JS)")
                                         time.sleep(1)
                                         break
                                     except:
                                         continue
-                    
-                    if button_clicked:
-                        break
+                        else:
+                            print(f"  [BLOCKED] Found 'Pelajari Selengkapnya' - skipping")
+                        
                 except:
                     continue
             
-            # Try XPath selectors if CSS failed
             if not button_clicked:
-                for xpath in text_selectors:
-                    try:
-                        buttons = article.find_elements(By.XPATH, xpath)
-                        for button in buttons:
-                            if button.is_displayed() and button.is_enabled():
-                                print(f"Found 'Selengkapnya' button via XPath: {button.text}")
-                                try:
-                                    self.scroll_to_element(button)
-                                    time.sleep(0.5)
-                                    button.click()
-                                    button_clicked = True
-                                    print("  [OK] Successfully clicked 'Selengkapnya' button (XPath)")
-                                    time.sleep(1)
-                                    break
-                                except:
-                                    try:
-                                        self.driver.execute_script("arguments[0].click();", button)
-                                        button_clicked = True
-                                        print("  [OK] Successfully clicked 'Selengkapnya' button (XPath-JS)")
-                                        time.sleep(1)
-                                        break
-                                    except:
-                                        continue
-                        
-                        if button_clicked:
-                            break
-                    except:
-                        continue
-            
-            # Alternative: Find clickable elements with "Selengkapnya" text
-            if not button_clicked:
-                try:
-                    clickable_elements = article.find_elements(By.CSS_SELECTOR, "span, div, a, button")
-                    for element in clickable_elements:
-                        try:
-                            text = element.text.strip().lower()
-                            if text in ['selengkapnya', 'show more', 'lihat selengkapnya', 'more']:
-                                if element.is_displayed() and element.is_enabled():
-                                    print(f"Found clickable 'Selengkapnya' element: {text}")
-                                    try:
-                                        self.scroll_to_element(element)
-                                        time.sleep(0.5)
-                                        element.click()
-                                        button_clicked = True
-                                        print("  [OK] Successfully clicked 'Selengkapnya' element")
-                                        time.sleep(1)
-                                        break
-                                    except:
-                                        try:
-                                            self.driver.execute_script("arguments[0].click();", element)
-                                            button_clicked = True
-                                            print("  [OK] Successfully clicked 'Selengkapnya' element (JS)")
-                                            time.sleep(1)
-                                            break
-                                        except:
-                                            continue
-                        except:
-                            continue
-                except:
-                    pass
-            
-            if not button_clicked:
-                print("  [INFO] No 'Selengkapnya' button found in this review")
+                print("  [INFO] No safe 'Selengkapnya' button found")
             
             return button_clicked
             

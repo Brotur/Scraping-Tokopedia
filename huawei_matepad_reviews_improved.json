@@ -10,7 +10,7 @@
     "variant": "Space Grey",
     "variant_normalized": "Space Grey",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:36:57"
+    "scraped_at": "2025-07-16 22:33:55"
   },
   {
     "rating": 1,
@@ -23,7 +23,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:37:03"
+    "scraped_at": "2025-07-16 22:34:00"
   },
   {
     "rating": 1,
@@ -36,7 +36,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:37:08"
+    "scraped_at": "2025-07-16 22:34:05"
   },
   {
     "rating": 1,
@@ -49,7 +49,7 @@
     "variant": "Violet + EWS",
     "variant_normalized": "Violet EWS",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:37:13"
+    "scraped_at": "2025-07-16 22:34:11"
   },
   {
     "rating": 1,
@@ -62,7 +62,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:37:18"
+    "scraped_at": "2025-07-16 22:34:16"
   },
   {
     "rating": 1,
@@ -75,7 +75,7 @@
     "variant": "Spcae Grey+EWS",
     "variant_normalized": "Spcae Grey EWS",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:37:24"
+    "scraped_at": "2025-07-16 22:34:21"
   },
   {
     "rating": 1,
@@ -88,20 +88,137 @@
     "variant": "Space Grey",
     "variant_normalized": "Space Grey",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:37:29"
+    "scraped_at": "2025-07-16 22:34:23"
   },
   {
     "rating": 1,
     "reviewer_name": "Andre",
     "reviewer_name_normalized": "Andre",
-    "review_text": "",
-    "review_text_normalized": "",
-    "review_date": "",
-    "review_date_normalized": "",
-    "variant": "",
-    "variant_normalized": "",
+    "review_text": "Tidak sesuai deskripsi.chat awal akn diberi keyboard + m pencil.Stlh dikirim,tdk ad m pencil-nya.Saat ditanya \"Kenapa tdk ad m pencil-nya?\" Katanya: kosong.Penjual tdk bertanggung jawab.Tdk sesuai kesepakatan + informasi awal.Promo berubah-ubah",
+    "review_text_normalized": "tidak sesuai deskripsi chat awal akn diberi keyboard m pencil stlh dikirim tdk ad m pencil nya saat ditanya kenapa tdk ad m pencil nya katanya kosong penjual tdk bertanggung jawab tdk sesuai kesepakatan informasi awal promo berubah ubah",
+    "review_date": "4 bulan lalu",
+    "review_date_normalized": "4 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
     "rating_filter": 1,
-    "scraped_at": "2025-07-16 21:37:37"
+    "scraped_at": "2025-07-16 22:34:28"
+  },
+  {
+    "rating": 1,
+    "reviewer_name": "M***d",
+    "reviewer_name_normalized": "M d",
+    "review_text": "Kecewa, barang tidak terkirim dan hilang, tapi saya tidak mendapat penggantian atas asuransi pengiriman.",
+    "review_text_normalized": "kecewa barang tidak terkirim dan hilang tapi saya tidak mendapat penggantian atas asuransi pengiriman",
+    "review_date": "9 bulan lalu",
+    "review_date_normalized": "9 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 1,
+    "scraped_at": "2025-07-16 22:34:30"
+  },
+  {
+    "rating": 1,
+    "reviewer_name": "Nabil",
+    "reviewer_name_normalized": "Nabil",
+    "review_text": "12 bulan lalu\nNabil\nVarian: Violet + EWS\nKendala: Tidak lengkap/salah kirim\n4 orang terbantu\nLihat Balasan",
+    "review_text_normalized": "bulan lalu nabil varian violet ews kendala tidak lengkap salah kirim orang terbantu lihat balasan",
+    "review_date": "12 bulan lalu",
+    "review_date_normalized": "12 bulan lalu",
+    "variant": "Violet + EWS",
+    "variant_normalized": "Violet EWS",
+    "rating_filter": 1,
+    "scraped_at": "2025-07-16 22:34:31"
+  },
+  {
+    "rating": 1,
+    "reviewer_name": "R***n",
+    "reviewer_name_normalized": "R n",
+    "review_text": "10 bulan lalu\nR***n\nVarian: Space Grey\nKendala: Kemasan tidak aman\n2 orang terbantu\nLihat Balasan",
+    "review_text_normalized": "bulan lalu r n varian space grey kendala kemasan tidak aman orang terbantu lihat balasan",
+    "review_date": "10 bulan lalu",
+    "review_date_normalized": "10 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 1,
+    "scraped_at": "2025-07-16 22:34:43"
+  },
+  {
+    "rating": 1,
+    "reviewer_name": "Anwar",
+    "reviewer_name_normalized": "Anwar",
+    "review_text": "11 bulan lalu\nAnwar\nVarian: Space Grey\nKendala: Pelayanan penjual kurang\n2 orang terbantu\nLihat Balasan",
+    "review_text_normalized": "bulan lalu anwar varian space grey kendala pelayanan penjual kurang orang terbantu lihat balasan",
+    "review_date": "11 bulan lalu",
+    "review_date_normalized": "11 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 1,
+    "scraped_at": "2025-07-16 22:34:45"
+  },
+  {
+    "rating": 2,
+    "reviewer_name": "R***i",
+    "reviewer_name_normalized": "R i",
+    "review_text": "percuma PO benefits yg didapet sma ky yg setelah PO. kualitas packing barang kacau, parah ini bagian pengirimannya. klo barang diterima sampai rusak gimana?!",
+    "review_text_normalized": "percuma po benefits yg didapet sma ky yg setelah po kualitas packing barang kacau parah ini bagian pengirimannya klo barang diterima sampai rusak gimana",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Grey+Proteksi",
+    "variant_normalized": "Grey Proteksi",
+    "rating_filter": 2,
+    "scraped_at": "2025-07-16 22:35:34"
+  },
+  {
+    "rating": 2,
+    "reviewer_name": "Syahier",
+    "reviewer_name_normalized": "Syahier",
+    "review_text": "rupanya dalam paket tidal termasuk Stylus Pen",
+    "review_text_normalized": "rupanya dalam paket tidal termasuk stylus pen",
+    "review_date": "7 bulan lalu",
+    "review_date_normalized": "7 bulan lalu",
+    "variant": "Spcae Grey+EWS",
+    "variant_normalized": "Spcae Grey EWS",
+    "rating_filter": 2,
+    "scraped_at": "2025-07-16 22:35:35"
+  },
+  {
+    "rating": 2,
+    "reviewer_name": "Iman",
+    "reviewer_name_normalized": "Iman",
+    "review_text": "Kalau teknologi oke, tapi transparansi marketing dan after salesnya yang bermasalah. For information kalau beli bonus bundle pen dan keyboardnya, itu tidak termasuk garansi. Jadi setelah pakai sekitar 1 bulan, pen bermasalah (ga tau memang kualitas pen nya gen 3 ini jelek atau memang defect pabrik), bawa ke service center ga diterima. harus beli pen baru 1,4jt (kalau beli online 1,2an). Itupun di service center barang ga ready (SC huawei Kelapa Gading). Ya huawei harus lebih transparan masalah ini. Jangan sekedar gembar gembor bonus bundle include tapi syarat dan ketentuan ga dijelasin. untuk yg mau beli buat gambar, saya juga belum bisa nilai banyak karena saat tip hover sekitar 1cm dari layar dia udah register small stroke, jadi garisnya ga karuan kepencet ke mana2. Sebelum akhirnya mati total sama sekali (mungkin karena pen saya bermasalah ) Kalau memang kualitas pen gen-3 separah itu, saya jadi takut untuk replace beli pen baru. Padahal harusnya drawing pen itu masuk kelas ke barang yang tahan banting. Ga tau mungkin saya saja yang apes dapat barang defect.",
+    "review_text_normalized": "kalau teknologi oke tapi transparansi marketing dan after salesnya yang bermasalah for information kalau beli bonus bundle pen dan keyboardnya itu tidak termasuk garansi jadi setelah pakai sekitar bulan pen bermasalah ga tau memang kualitas pen nya gen ini jelek atau memang defect pabrik bawa ke service center ga diterima harus beli pen baru 4jt kalau beli online 2an itupun di service center barang ga ready sc huawei kelapa gading ya huawei harus lebih transparan masalah ini jangan sekedar gembar gembor bonus bundle include tapi syarat dan ketentuan ga dijelasin untuk yg mau beli buat gambar saya juga belum bisa nilai banyak karena saat tip hover sekitar 1cm dari layar dia udah register small stroke jadi garisnya ga karuan kepencet ke mana2 sebelum akhirnya mati total sama sekali mungkin karena pen saya bermasalah kalau memang kualitas pen gen separah itu saya jadi takut untuk replace beli pen baru padahal harusnya drawing pen itu masuk kelas ke barang yang tahan banting ga tau mungkin saya saja yang apes dapat barang defect",
+    "review_date": "11 bulan lalu",
+    "review_date_normalized": "11 bulan lalu",
+    "variant": "Grey+Proteksi",
+    "variant_normalized": "Grey Proteksi",
+    "rating_filter": 2,
+    "scraped_at": "2025-07-16 22:35:41"
+  },
+  {
+    "rating": 2,
+    "reviewer_name": "A***y",
+    "reviewer_name_normalized": "A y",
+    "review_text": "Sorry harus kasih bintang 2 karena kurir ekspedisi pake Sicepat denga kualitas pengiriman yg sangat buruk, barang yg seharusnya dapat diterima on-time terpaksa harus mundur dan itu pun saya sendiri yg harus ambil ke ekspedisi. Mohon untuk dihapus aja pilihan kurir Sicepat sebab bukannya cepat malah lambat, sekian.",
+    "review_text_normalized": "sorry harus kasih bintang karena kurir ekspedisi pake sicepat denga kualitas pengiriman yg sangat buruk barang yg seharusnya dapat diterima on time terpaksa harus mundur dan itu pun saya sendiri yg harus ambil ke ekspedisi mohon untuk dihapus aja pilihan kurir sicepat sebab bukannya cepat malah lambat sekian",
+    "review_date": "10 bulan lalu",
+    "review_date_normalized": "10 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 2,
+    "scraped_at": "2025-07-16 22:35:46"
+  },
+  {
+    "rating": 2,
+    "reviewer_name": "N***d",
+    "reviewer_name_normalized": "N d",
+    "review_text": "gak lengkap aksesorisnya. gak ada pencil, gak ada mouse.",
+    "review_text_normalized": "gak lengkap aksesorisnya gak ada pencil gak ada mouse",
+    "review_date": "11 bulan lalu",
+    "review_date_normalized": "11 bulan lalu",
+    "variant": "Violet",
+    "variant_normalized": "Violet",
+    "rating_filter": 2,
+    "scraped_at": "2025-07-16 22:35:48"
   },
   {
     "rating": 3,
@@ -114,7 +231,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:06"
+    "scraped_at": "2025-07-16 22:36:14"
   },
   {
     "rating": 3,
@@ -127,7 +244,7 @@
     "variant": "Violet + EWS",
     "variant_normalized": "Violet EWS",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:12"
+    "scraped_at": "2025-07-16 22:36:19"
   },
   {
     "rating": 3,
@@ -140,7 +257,7 @@
     "variant": "Space Grey",
     "variant_normalized": "Space Grey",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:17"
+    "scraped_at": "2025-07-16 22:36:24"
   },
   {
     "rating": 3,
@@ -153,7 +270,7 @@
     "variant": "Space Grey",
     "variant_normalized": "Space Grey",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:22"
+    "scraped_at": "2025-07-16 22:36:30"
   },
   {
     "rating": 3,
@@ -166,7 +283,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:27"
+    "scraped_at": "2025-07-16 22:36:35"
   },
   {
     "rating": 3,
@@ -179,7 +296,7 @@
     "variant": "Space Grey",
     "variant_normalized": "Space Grey",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:33"
+    "scraped_at": "2025-07-16 22:36:40"
   },
   {
     "rating": 3,
@@ -192,7 +309,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:38"
+    "scraped_at": "2025-07-16 22:36:45"
   },
   {
     "rating": 3,
@@ -205,7 +322,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:43"
+    "scraped_at": "2025-07-16 22:36:50"
   },
   {
     "rating": 3,
@@ -218,7 +335,7 @@
     "variant": "Spcae Grey+EWS",
     "variant_normalized": "Spcae Grey EWS",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:48"
+    "scraped_at": "2025-07-16 22:36:56"
   },
   {
     "rating": 3,
@@ -231,20 +348,59 @@
     "variant": "Space Grey",
     "variant_normalized": "Space Grey",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:38:54"
+    "scraped_at": "2025-07-16 22:37:01"
   },
   {
     "rating": 3,
     "reviewer_name": "v***n",
     "reviewer_name_normalized": "v n",
-    "review_text": "",
-    "review_text_normalized": "",
-    "review_date": "",
-    "review_date_normalized": "",
-    "variant": "",
-    "variant_normalized": "",
+    "review_text": "packing luarnya sembarangan... kurang profesional.",
+    "review_text_normalized": "packing luarnya sembarangan kurang profesional",
+    "review_date": "11 bulan lalu",
+    "review_date_normalized": "11 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
     "rating_filter": 3,
-    "scraped_at": "2025-07-16 21:39:10"
+    "scraped_at": "2025-07-16 22:37:13"
+  },
+  {
+    "rating": 3,
+    "reviewer_name": "Vincent",
+    "reviewer_name_normalized": "Vincent",
+    "review_text": "10 bulan lalu\nVincent\nVarian: Spcae Grey+EWS\nKendala: Tidak lengkap/salah kirim\n1 orang terbantu\nLihat Balasan",
+    "review_text_normalized": "bulan lalu vincent varian spcae greyews kendala tidak lengkap salah kirim orang terbantu lihat balasan",
+    "review_date": "10 bulan lalu",
+    "review_date_normalized": "10 bulan lalu",
+    "variant": "Spcae Grey+EWS",
+    "variant_normalized": "Spcae Grey EWS",
+    "rating_filter": 3,
+    "scraped_at": "2025-07-16 22:37:14"
+  },
+  {
+    "rating": 3,
+    "reviewer_name": "P***I",
+    "reviewer_name_normalized": "P I",
+    "review_text": "Lebih dari 1 tahun lalu\nP***I\nVarian: Violet+Proteksi\nKendala: Kemasan tidak aman, Pengiriman lama\nMembantu\nLihat Balasan",
+    "review_text_normalized": "lebih dari tahun lalu p i varian violetproteksi kendala kemasan tidak aman pengiriman lama membantu lihat balasan",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Violet+Proteksi",
+    "variant_normalized": "Violet Proteksi",
+    "rating_filter": 3,
+    "scraped_at": "2025-07-16 22:37:16"
+  },
+  {
+    "rating": 3,
+    "reviewer_name": "A***C",
+    "reviewer_name_normalized": "A C",
+    "review_text": ".",
+    "review_text_normalized": "",
+    "review_date": "8 bulan lalu",
+    "review_date_normalized": "8 bulan lalu",
+    "variant": "Spcae Grey+EWS",
+    "variant_normalized": "Spcae Grey EWS",
+    "rating_filter": 3,
+    "scraped_at": "2025-07-16 22:37:18"
   },
   {
     "rating": 4,
@@ -257,7 +413,7 @@
     "variant": "Spcae Grey+EWS",
     "variant_normalized": "Spcae Grey EWS",
     "rating_filter": 4,
-    "scraped_at": "2025-07-16 21:39:35"
+    "scraped_at": "2025-07-16 22:37:56"
   },
   {
     "rating": 4,
@@ -270,7 +426,7 @@
     "variant": "Violet",
     "variant_normalized": "Violet",
     "rating_filter": 4,
-    "scraped_at": "2025-07-16 21:39:40"
+    "scraped_at": "2025-07-16 22:37:58"
   },
   {
     "rating": 4,
@@ -283,7 +439,7 @@
     "variant": "Spcae Grey+EWS",
     "variant_normalized": "Spcae Grey EWS",
     "rating_filter": 4,
-    "scraped_at": "2025-07-16 21:39:45"
+    "scraped_at": "2025-07-16 22:38:03"
   },
   {
     "rating": 4,
@@ -296,7 +452,7 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 4,
-    "scraped_at": "2025-07-16 21:39:50"
+    "scraped_at": "2025-07-16 22:38:05"
   },
   {
     "rating": 4,
@@ -309,20 +465,137 @@
     "variant": "Spcae Grey+EWS",
     "variant_normalized": "Spcae Grey EWS",
     "rating_filter": 4,
-    "scraped_at": "2025-07-16 21:39:56"
+    "scraped_at": "2025-07-16 22:38:06"
   },
   {
     "rating": 4,
     "reviewer_name": "A***D",
     "reviewer_name_normalized": "A D",
-    "review_text": "",
-    "review_text_normalized": "",
-    "review_date": "",
-    "review_date_normalized": "",
-    "variant": "",
-    "variant_normalized": "",
+    "review_text": "luar biasa tidak aman packing barangnya, luarbiasa juga kurirnya sicepat yg super lambat dan sampai paketnya sepenyok ini, sampai segelnya terbuka. untung barang di dalamnya masih aman",
+    "review_text_normalized": "luar biasa tidak aman packing barangnya luarbiasa juga kurirnya sicepat yg super lambat dan sampai paketnya sepenyok ini sampai segelnya terbuka untung barang di dalamnya masih aman",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Grey+Proteksi",
+    "variant_normalized": "Grey Proteksi",
     "rating_filter": 4,
-    "scraped_at": "2025-07-16 21:40:02"
+    "scraped_at": "2025-07-16 22:38:12"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "F***i",
+    "reviewer_name_normalized": "F i",
+    "review_text": "Barang datang lebih cepat dari yang seharusnya namun kondisi kardus terbuka, lakban dan sticker tidak lengket sempurna sangat berbahaya apalagi ada tulisan huaweinya",
+    "review_text_normalized": "barang datang lebih cepat dari yang seharusnya namun kondisi kardus terbuka lakban dan sticker tidak lengket sempurna sangat berbahaya apalagi ada tulisan huaweinya",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Violet+Proteksi",
+    "variant_normalized": "Violet Proteksi",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:13"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "S***o",
+    "reviewer_name_normalized": "S o",
+    "review_text": "Saya kecewa dengan packing yang tidak rapat dan rapi. Saat paket saya terima, kondisinya bungkus luarnya rusak. bungkus luar yg rusak pasti membuat kawatir kondisi barang di dalamnya. Mohon lain kali lebih memperhatikan PACKAGING luar mengingat ini BUKAN barang MURAH.",
+    "review_text_normalized": "saya kecewa dengan packing yang tidak rapat dan rapi saat paket saya terima kondisinya bungkus luarnya rusak bungkus luar yg rusak pasti membuat kawatir kondisi barang di dalamnya mohon lain kali lebih memperhatikan packaging luar mengingat ini bukan barang murah",
+    "review_date": "12 bulan lalu",
+    "review_date_normalized": "12 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:18"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "l***e",
+    "reviewer_name_normalized": "l e",
+    "review_text": "barang bagus, oke. tapi untuk packing barang mohon diperhatikan kembali. sekelas huawei & official store menurut saya kurang sekali untuk pengemasan barangnya. semoga bisa ditingkatkan",
+    "review_text_normalized": "barang bagus oke tapi untuk packing barang mohon diperhatikan kembali sekelas huawei official store menurut saya kurang sekali untuk pengemasan barangnya semoga bisa ditingkatkan",
+    "review_date": "11 bulan lalu",
+    "review_date_normalized": "11 bulan lalu",
+    "variant": "Violet+Proteksi",
+    "variant_normalized": "Violet Proteksi",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:23"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "A***d",
+    "reviewer_name_normalized": "A d",
+    "review_text": "barang ori dan bonusnya mantap.. enak dipakai dan smooth.. layar lembut di mata dan speakernya mantab.. sayang utk hrg segitu kameranya hrsnya bs lbh baik lg.. kondisi agak gelap dikit aja sangat grainy kyk tab china murmer dan baterenya gak seawet yg kukira",
+    "review_text_normalized": "barang ori dan bonusnya mantap enak dipakai dan smooth layar lembut di mata dan speakernya mantab sayang utk hrg segitu kameranya hrsnya bs lbh baik lg kondisi agak gelap dikit aja sangat grainy kyk tab china murmer dan baterenya gak seawet yg kukira",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Violet+Proteksi",
+    "variant_normalized": "Violet Proteksi",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:29"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "M***r",
+    "reviewer_name_normalized": "M r",
+    "review_text": "Permasalahan emang dipackingan kurang aman, kalau mau beli laptop sedikit ragu",
+    "review_text_normalized": "permasalahan emang dipackingan kurang aman kalau mau beli laptop sedikit ragu",
+    "review_date": "12 bulan lalu",
+    "review_date_normalized": "12 bulan lalu",
+    "variant": "Violet",
+    "variant_normalized": "Violet",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:41"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "I***n",
+    "reviewer_name_normalized": "I n",
+    "review_text": "Barang sudah sampai. tapi dus nya sudah bolong2 ya. ngeri2 sedap euy packing nya.. tp kondisi kelengkapan kumplit dan tidak ada kendala.",
+    "review_text_normalized": "barang sudah sampai tapi dus nya sudah bolong2 ya ngeri2 sedap euy packing nya tp kondisi kelengkapan kumplit dan tidak ada kendala",
+    "review_date": "11 bulan lalu",
+    "review_date_normalized": "11 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:42"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "Azmi",
+    "reviewer_name_normalized": "Azmi",
+    "review_text": "packing mohon untuk lebih safety lagi",
+    "review_text_normalized": "packing mohon untuk lebih safety lagi",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Grey+Proteksi",
+    "variant_normalized": "Grey Proteksi",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:44"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "H***o",
+    "reviewer_name_normalized": "H o",
+    "review_text": "Dus nya tipis amat. Sampai disini udah penyok dan robek. Sampai box tablet nga juga ikutan penyok. Tolong lah sekelas official store huawei koq kualitas packing sampai segitux.",
+    "review_text_normalized": "dus nya tipis amat sampai disini udah penyok dan robek sampai box tablet nga juga ikutan penyok tolong lah sekelas official store huawei koq kualitas packing sampai segitux",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Grey+Proteksi",
+    "variant_normalized": "Grey Proteksi",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:49"
+  },
+  {
+    "rating": 4,
+    "reviewer_name": "R***t",
+    "reviewer_name_normalized": "R t",
+    "review_text": "Barang sudah sampai dengan aman, hanya saja ternyata tidak termasuk Pen. Kalo mau beli pen dijual terpisah, dan tidak dicantumkan di deskripsi.",
+    "review_text_normalized": "barang sudah sampai dengan aman hanya saja ternyata tidak termasuk pen kalo mau beli pen dijual terpisah dan tidak dicantumkan di deskripsi",
+    "review_date": "10 bulan lalu",
+    "review_date_normalized": "10 bulan lalu",
+    "variant": "Violet",
+    "variant_normalized": "Violet",
+    "rating_filter": 4,
+    "scraped_at": "2025-07-16 22:38:51"
   },
   {
     "rating": 5,
@@ -335,7 +608,7 @@
     "variant": "Violet",
     "variant_normalized": "Violet",
     "rating_filter": 5,
-    "scraped_at": "2025-07-16 21:40:28"
+    "scraped_at": "2025-07-16 22:39:17"
   },
   {
     "rating": 5,
@@ -348,7 +621,7 @@
     "variant": "Space Grey",
     "variant_normalized": "Space Grey",
     "rating_filter": 5,
-    "scraped_at": "2025-07-16 21:40:33"
+    "scraped_at": "2025-07-16 22:39:19"
   },
   {
     "rating": 5,
@@ -361,7 +634,7 @@
     "variant": "Violet",
     "variant_normalized": "Violet",
     "rating_filter": 5,
-    "scraped_at": "2025-07-16 21:40:38"
+    "scraped_at": "2025-07-16 22:39:20"
   },
   {
     "rating": 5,
@@ -374,7 +647,7 @@
     "variant": "Spcae Grey+EWS",
     "variant_normalized": "Spcae Grey EWS",
     "rating_filter": 5,
-    "scraped_at": "2025-07-16 21:40:43"
+    "scraped_at": "2025-07-16 22:39:22"
   },
   {
     "rating": 5,
@@ -387,19 +660,136 @@
     "variant": "Grey+Proteksi",
     "variant_normalized": "Grey Proteksi",
     "rating_filter": 5,
-    "scraped_at": "2025-07-16 21:40:49"
+    "scraped_at": "2025-07-16 22:39:24"
   },
   {
     "rating": 5,
     "reviewer_name": "Heru",
     "reviewer_name_normalized": "Heru",
-    "review_text": "",
-    "review_text_normalized": "",
-    "review_date": "",
-    "review_date_normalized": "",
-    "variant": "",
-    "variant_normalized": "",
+    "review_text": "Tablet yang bonusnya melimpah, ada huawei m pencil gen 3, ada official keyboard case, dan ada huawei wireless mousenya. Cocok dibeli saat masa pre order. Adanya Go Paint mempengaruhi daya jual tablet ini. Waktunya belajar bikin digital art dan berkreasi. Packingnya juga aman dan pengirimannya sesuai dengan yang dijanjikan.",
+    "review_text_normalized": "tablet yang bonusnya melimpah ada huawei m pencil gen ada official keyboard case dan ada huawei wireless mousenya cocok dibeli saat masa pre order adanya go paint mempengaruhi daya jual tablet ini waktunya belajar bikin digital art dan berkreasi packingnya juga aman dan pengirimannya sesuai dengan yang dijanjikan",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Grey+Proteksi",
+    "variant_normalized": "Grey Proteksi",
     "rating_filter": 5,
-    "scraped_at": "2025-07-16 21:40:55"
+    "scraped_at": "2025-07-16 22:39:29"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "Richardo",
+    "reviewer_name_normalized": "Richardo",
+    "review_text": "Sempat kuatir dengan kondisi kardus Coklat yg penyok dan Kardus Tabletnya yang warna putih. tetapi setelah dicek kondisi Tablet dalam kondisi baik. mohon di perhatikan kembali. Dan sekarang dalam masa penyesuaian, keseluruhan dengan Tablet sangat kagum. Terimakasih Huawei",
+    "review_text_normalized": "sempat kuatir dengan kondisi kardus coklat yg penyok dan kardus tabletnya yang warna putih tetapi setelah dicek kondisi tablet dalam kondisi baik mohon di perhatikan kembali dan sekarang dalam masa penyesuaian keseluruhan dengan tablet sangat kagum terimakasih huawei",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Violet + EWS",
+    "variant_normalized": "Violet EWS",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:39:34"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "Luna",
+    "reviewer_name_normalized": "Luna",
+    "review_text": "barang tersegel dengan rapi walaupun kardus luar penyok. Alhamdulillah laptop aman .warna purple nya cantik banget. berfungsi dengan baik.pokoknya puas belanja disini.terimakasih. admin juga gercep jawab chat.",
+    "review_text_normalized": "barang tersegel dengan rapi walaupun kardus luar penyok alhamdulillah laptop aman warna purple nya cantik banget berfungsi dengan baik pokoknya puas belanja disini terimakasih admin juga gercep jawab chat",
+    "review_date": "8 bulan lalu",
+    "review_date_normalized": "8 bulan lalu",
+    "variant": "Violet",
+    "variant_normalized": "Violet",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:39:39"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "M***d",
+    "reviewer_name_normalized": "M d",
+    "review_text": "Barangnya Bagus Seller Ramah dan Responsive Packing Aman Semuanya Oke",
+    "review_text_normalized": "barangnya bagus seller ramah dan responsive packing aman semuanya oke",
+    "review_date": "9 bulan lalu",
+    "review_date_normalized": "9 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:39:41"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "A***a",
+    "reviewer_name_normalized": "A a",
+    "review_text": "Dapat harga gooddeal pas 10.10. Udah ngincer lumayan lama, pas tau diskonnya lumayan lngsg gas checkout. So far ini tab paling value for money buat saat ini, udh complete dpt keyboard dan pen. Magnetnya kenceng bgt juga buat berdiriin tabnya diatas keyboard. Yg masih worry klo ini gbs google dll, gak ya ini bisa kok buat aplikasi google dan tetek bengek lainnya. Mantap huawei pantes si apel ketar ketir hehehe",
+    "review_text_normalized": "dapat harga gooddeal pas udah ngincer lumayan lama pas tau diskonnya lumayan lngsg gas checkout so far ini tab paling value for money buat saat ini udh complete dpt keyboard dan pen magnetnya kenceng bgt juga buat berdiriin tabnya diatas keyboard yg masih worry klo ini gbs google dll gak ya ini bisa kok buat aplikasi google dan tetek bengek lainnya mantap huawei pantes si apel ketar ketir hehehe",
+    "review_date": "9 bulan lalu",
+    "review_date_normalized": "9 bulan lalu",
+    "variant": "Space Grey",
+    "variant_normalized": "Space Grey",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:39:46"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "Fachry",
+    "reviewer_name_normalized": "Fachry",
+    "review_text": "barang sudah sampai. pengiriman cepat. aman terkendali. free nya hanya keyboard saja. tanpa ada mouse dan mpensil.. musti beli terpisah sih. agak repot jadinya.. beli lagi . pakai enggak cumplitt",
+    "review_text_normalized": "barang sudah sampai pengiriman cepat aman terkendali free nya hanya keyboard saja tanpa ada mouse dan mpensil musti beli terpisah sih agak repot jadinya beli lagi pakai enggak cumplitt",
+    "review_date": "4 minggu lalu",
+    "review_date_normalized": "4 minggu lalu",
+    "variant": "Spcae Grey+EWS",
+    "variant_normalized": "Spcae Grey EWS",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:40:02"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "D***z",
+    "reviewer_name_normalized": "D z",
+    "review_text": "Seller ramah dan infrormatif juga fast respon, thank you",
+    "review_text_normalized": "seller ramah dan infrormatif juga fast respon thank you",
+    "review_date": "Lebih dari 1 tahun lalu",
+    "review_date_normalized": "Lebih dari 1 tahun lalu",
+    "variant": "Violet",
+    "variant_normalized": "Violet",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:40:03"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "Kristanto",
+    "reviewer_name_normalized": "Kristanto",
+    "review_text": "Barang Bagus, Semoga Awet pemakaian nya dan tidak ada kendala ke depannya",
+    "review_text_normalized": "barang bagus semoga awet pemakaian nya dan tidak ada kendala ke depannya",
+    "review_date": "8 bulan lalu",
+    "review_date_normalized": "8 bulan lalu",
+    "variant": "Spcae Grey+EWS",
+    "variant_normalized": "Spcae Grey EWS",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:40:05"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "Saiful",
+    "reviewer_name_normalized": "Saiful",
+    "review_text": "Barang sampai dengan aman, selamat, dan cepat. Sudah pasti ori dan berfungsi dengan baik. Kualitas layar yang nyaman di mata, semoga bisa meningkatkan produktivitas",
+    "review_text_normalized": "barang sampai dengan aman selamat dan cepat sudah pasti ori dan berfungsi dengan baik kualitas layar yang nyaman di mata semoga bisa meningkatkan produktivitas",
+    "review_date": "9 bulan lalu",
+    "review_date_normalized": "9 bulan lalu",
+    "variant": "Violet + EWS",
+    "variant_normalized": "Violet EWS",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:40:06"
+  },
+  {
+    "rating": 5,
+    "reviewer_name": "D***y",
+    "reviewer_name_normalized": "D y",
+    "review_text": "produk terjamin ori, admin sangat responsif. sejauh ini sudah di tes 2 hari oke no prob.. namun untuk papermatte edition yg tergolong unik ini tidak dapat bonus m-pen hanya keyboard aja. harus beli terpisah",
+    "review_text_normalized": "produk terjamin ori admin sangat responsif sejauh ini sudah di tes hari oke no prob namun untuk papermatte edition yg tergolong unik ini tidak dapat bonus m pen hanya keyboard aja harus beli terpisah",
+    "review_date": "7 bulan lalu",
+    "review_date_normalized": "7 bulan lalu",
+    "variant": "Violet",
+    "variant_normalized": "Violet",
+    "rating_filter": 5,
+    "scraped_at": "2025-07-16 22:40:12"
   }
 ]

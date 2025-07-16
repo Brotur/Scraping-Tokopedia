@@ -1,0 +1,25 @@
+SENTIMENT ANALYSIS SUMMARY
+==================================================
+
+Overall Sentiment Distribution:
+Neutral: 49 reviews (81.7%)
+Positive: 10 reviews (16.7%)
+Negative: 1 reviews (1.7%)
+
+==================================================
+Sentiment by Rating:
+sentiment  Negative  Neutral  Positive
+rating                                
+1                 0       11         1
+2                 1        4         0
+3                 0       12         1
+4                 0       12         3
+5                 0       10         5
+
+==================================================
+Average Polarity by Rating:
+Rating 1: 0.003
+Rating 2: -0.110
+Rating 3: 0.008
+Rating 4: 0.074
+Rating 5: 0.110
