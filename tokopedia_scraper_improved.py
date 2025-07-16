@@ -458,6 +458,11 @@ class TokopediaReviewScraperImproved:
             for i, article in enumerate(articles_to_process):
                 try:
                     print(f"Processing article {i+1}/{len(articles_to_process)}")
+                    
+                    # Scroll to article first
+                    self.scroll_to_element(article)
+                    time.sleep(0.5)
+                    
                     review_data = self.extract_review_from_article(article, rating_filter)
                     if review_data:
                         # Check for duplicates
@@ -472,6 +477,11 @@ class TokopediaReviewScraperImproved:
                             self.reviews_data.append(review_data)
                             scraped_reviews.append(review_data)
                             print(f"  [OK] Added review from {review_data['reviewer_name']}")
+                            print(f"  [OK] Review text length: {len(review_data['review_text'])} characters")
+                            
+                            # Show if review was expanded
+                            if len(review_data['review_text']) > 100:
+                                print(f"  [INFO] Review appears to be expanded/full text")
                         else:
                             print(f"  [SKIP] Duplicate review from {review_data['reviewer_name']}")
                     else:
@@ -506,12 +516,8 @@ class TokopediaReviewScraperImproved:
                 ".name"
             ])
             
-            # Extract review text
-            review_text = self.safe_find_text(article, [
-                "span[data-testid='lblItemUlasan']",
-                ".css-34x6j7-unf-heading span",
-                "p[data-testid='lblItemUlasan']"
-            ])
+            # Extract review text WITH expansion (NEW!)
+            review_text = self.extract_full_review_text(article)
             
             # Extract review date
             review_date = self.safe_find_text(article, [
@@ -558,6 +564,224 @@ class TokopediaReviewScraperImproved:
         except Exception as e:
             print(f"Error extracting review data: {e}")
             return None
+
+    def extract_full_review_text(self, article):
+        """Extract full review text with 'Selengkapnya' expansion"""
+        try:
+            # First, try to expand the review text
+            expanded = self.expand_review_text(article)
+            
+            # Wait a moment for expansion to complete
+            if expanded:
+                time.sleep(1)
+            
+            # Try multiple selectors for review text
+            review_selectors = [
+                "span[data-testid='lblItemUlasan']",
+                "div[data-testid='lblItemUlasan']",
+                "p[data-testid='lblItemUlasan']",
+                ".css-34x6j7-unf-heading span",
+                ".css-1k1relq-unf-heading span",
+                "span.css-3017qm",
+                "div.css-3017qm",
+                "span[class*='review']",
+                "div[class*='review'] span"
+            ]
+            
+            review_text = ""
+            for selector in review_selectors:
+                try:
+                    element = article.find_element(By.CSS_SELECTOR, selector)
+                    text = element.text.strip()
+                    if text and len(text) > len(review_text):
+                        review_text = text
+                except:
+                    continue
+            
+            # If still no text, try fallback method
+            if not review_text:
+                review_text = self.extract_review_text_fallback(article)
+            
+            return review_text
+            
+        except Exception as e:
+            print(f"Error extracting full review text: {e}")
+            return ""
+
+    def expand_review_text(self, article):
+        """Find and click 'Selengkapnya' button to expand review text"""
+        try:
+            # Multiple selectors for "Selengkapnya" button
+            selengkapnya_selectors = [
+                "button[data-testid='btnSelengkapnya']",
+                "button[data-testid='btnShowMore']",
+                "span[data-testid='btnSelengkapnya']",
+                "a[data-testid='btnSelengkapnya']",
+                "div[data-testid='btnSelengkapnya']",
+                "button[aria-label*='Selengkapnya']",
+                "button[aria-label*='Show more']",
+                "button[aria-label*='Lihat selengkapnya']",
+                "button.css-1k1relq-unf-heading",
+                "button.css-3017qm",
+                "span.css-1k1relq-unf-heading",
+                "span.css-3017qm",
+                "button[class*='selengkapnya']",
+                "span[class*='selengkapnya']"
+            ]
+            
+            # Text-based selectors using XPath
+            text_selectors = [
+                "//button[contains(text(), 'Selengkapnya')]",
+                "//span[contains(text(), 'Selengkapnya')]",
+                "//a[contains(text(), 'Selengkapnya')]",
+                "//div[contains(text(), 'Selengkapnya')]",
+                "//button[contains(text(), 'selengkapnya')]",
+                "//span[contains(text(), 'selengkapnya')]",
+                "//button[contains(text(), 'Show more')]",
+                "//span[contains(text(), 'Show more')]",
+                "//button[contains(text(), 'Lihat selengkapnya')]",
+                "//span[contains(text(), 'Lihat selengkapnya')]",
+                "//button[contains(text(), 'Lihat Selengkapnya')]",
+                "//span[contains(text(), 'Lihat Selengkapnya')]",
+                "//button[contains(text(), 'More')]",
+                "//span[contains(text(), 'More')]"
+            ]
+            
+            button_clicked = False
+            
+            # Try CSS selectors first
+            for selector in selengkapnya_selectors:
+                try:
+                    buttons = article.find_elements(By.CSS_SELECTOR, selector)
+                    for button in buttons:
+                        if button.is_displayed() and button.is_enabled():
+                            button_text = button.text.strip().lower()
+                            if any(keyword in button_text for keyword in ['selengkapnya', 'show more', 'lihat', 'more']):
+                                print(f"Found 'Selengkapnya' button: {button.text}")
+                                try:
+                                    # Scroll to button
+                                    self.scroll_to_element(button)
+                                    time.sleep(0.5)
+                                    
+                                    # Try clicking
+                                    button.click()
+                                    button_clicked = True
+                                    print("  [OK] Successfully clicked 'Selengkapnya' button")
+                                    time.sleep(1)
+                                    break
+                                except:
+                                    try:
+                                        # Try JavaScript click
+                                        self.driver.execute_script("arguments[0].click();", button)
+                                        button_clicked = True
+                                        print("  [OK] Successfully clicked 'Selengkapnya' button (JS)")
+                                        time.sleep(1)
+                                        break
+                                    except:
+                                        continue
+                    
+                    if button_clicked:
+                        break
+                except:
+                    continue
+            
+            # Try XPath selectors if CSS failed
+            if not button_clicked:
+                for xpath in text_selectors:
+                    try:
+                        buttons = article.find_elements(By.XPATH, xpath)
+                        for button in buttons:
+                            if button.is_displayed() and button.is_enabled():
+                                print(f"Found 'Selengkapnya' button via XPath: {button.text}")
+                                try:
+                                    self.scroll_to_element(button)
+                                    time.sleep(0.5)
+                                    button.click()
+                                    button_clicked = True
+                                    print("  [OK] Successfully clicked 'Selengkapnya' button (XPath)")
+                                    time.sleep(1)
+                                    break
+                                except:
+                                    try:
+                                        self.driver.execute_script("arguments[0].click();", button)
+                                        button_clicked = True
+                                        print("  [OK] Successfully clicked 'Selengkapnya' button (XPath-JS)")
+                                        time.sleep(1)
+                                        break
+                                    except:
+                                        continue
+                        
+                        if button_clicked:
+                            break
+                    except:
+                        continue
+            
+            # Alternative: Find clickable elements with "Selengkapnya" text
+            if not button_clicked:
+                try:
+                    clickable_elements = article.find_elements(By.CSS_SELECTOR, "span, div, a, button")
+                    for element in clickable_elements:
+                        try:
+                            text = element.text.strip().lower()
+                            if text in ['selengkapnya', 'show more', 'lihat selengkapnya', 'more']:
+                                if element.is_displayed() and element.is_enabled():
+                                    print(f"Found clickable 'Selengkapnya' element: {text}")
+                                    try:
+                                        self.scroll_to_element(element)
+                                        time.sleep(0.5)
+                                        element.click()
+                                        button_clicked = True
+                                        print("  [OK] Successfully clicked 'Selengkapnya' element")
+                                        time.sleep(1)
+                                        break
+                                    except:
+                                        try:
+                                            self.driver.execute_script("arguments[0].click();", element)
+                                            button_clicked = True
+                                            print("  [OK] Successfully clicked 'Selengkapnya' element (JS)")
+                                            time.sleep(1)
+                                            break
+                                        except:
+                                            continue
+                        except:
+                            continue
+                except:
+                    pass
+            
+            if not button_clicked:
+                print("  [INFO] No 'Selengkapnya' button found in this review")
+            
+            return button_clicked
+            
+        except Exception as e:
+            print(f"Error expanding review text: {e}")
+            return False
+
+    def extract_review_text_fallback(self, article):
+        """Fallback method to extract review text when normal methods fail"""
+        try:
+            # Get all text elements and find the longest one that looks like a review
+            text_elements = article.find_elements(By.CSS_SELECTOR, "span, p, div")
+            
+            longest_text = ""
+            for element in text_elements:
+                try:
+                    text = element.text.strip()
+                    # Filter out navigation elements, buttons, dates, etc.
+                    if (len(text) > 20 and 
+                        not text.lower().startswith(('rating', 'bintang', 'varian', 'helpful', 'balas', 'laporkan')) and
+                        not text.lower().endswith(('ago', 'lalu', 'days', 'hari', 'menit', 'jam', 'bulan', 'tahun')) and
+                        not text.lower() in ['selengkapnya', 'show more', 'lihat selengkapnya'] and
+                        len(text) > len(longest_text)):
+                        longest_text = text
+                except:
+                    continue
+            
+            return longest_text
+            
+        except Exception as e:
+            print(f"Error in fallback text extraction: {e}")
+            return ""
             
     def extract_star_rating(self, article):
         """Extract star rating from article"""
@@ -727,8 +951,19 @@ class TokopediaReviewScraperImproved:
     def save_to_json(self, filename='tokopedia_reviews_improved.json'):
         """Save data to JSON"""
         if self.reviews_data:
+            # Clean data before saving
+            cleaned_data = []
+            for review in self.reviews_data:
+                cleaned_review = {}
+                for key, value in review.items():
+                    if isinstance(value, str):
+                        cleaned_review[key] = self.clean_unicode_chars(value)
+                    else:
+                        cleaned_review[key] = value
+                cleaned_data.append(cleaned_review)
+            
             with open(filename, 'w', encoding='utf-8') as f:
-                json.dump(self.reviews_data, f, ensure_ascii=False, indent=2)
+                json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
             print(f"Data also saved to {filename}")
             
     def validate_normalized_data(self):
@@ -927,13 +1162,17 @@ class TokopediaReviewScraperImproved:
 
 # Usage example
 if __name__ == "__main__":
-    # URL produk Samsung Galaxy A16 5G
+    # URL produk
     product_url = "https://www.tokopedia.com/huawei/huawei-matepad-11-5-s-papermatte-edition-tablet-8-256gb-nearlink-accessories-gopaint-pc-level-wps-space-grey-94e22/review"
     
     # Initialize scraper
     scraper = TokopediaReviewScraperImproved(headless=False)
     
     try:
+        print("=== TOKOPEDIA REVIEW SCRAPER WITH SELENGKAPNYA FEATURE ===")
+        print(f"Target URL: {product_url}")
+        print("Starting scraping process...")
+        
         # Scrape reviews for specific ratings with max 15 reviews per rating
         scraper.get_reviews_by_rating(product_url, target_ratings=[1, 2, 3, 4, 5], max_reviews_per_rating=15)
         
@@ -946,6 +1185,13 @@ if __name__ == "__main__":
         
         # Save sentiment-ready data
         scraper.save_sentiment_ready_data('huawei_matepad_sentiment_ready.json')
+        
+        print("\n=== SCRAPING COMPLETED ===")
+        print("Files generated:")
+        print("- huawei_matepad_reviews_improved.csv")
+        print("- huawei_matepad_reviews_improved.json")
+        print("- huawei_matepad_sentiment_ready.json")
+        print("- huawei_matepad_sentiment_ready.csv")
         
     except Exception as e:
         print(f"Error: {e}")
