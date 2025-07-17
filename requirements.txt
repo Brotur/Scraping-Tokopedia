@@ -15,3 +15,8 @@ unicodedata2==15.1.0
 
 # Browser driver (pastikan ChromeDriver sudah terinstall)
 webdriver-manager==4.0.1
+
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
