@@ -362,7 +362,8 @@ async def root():
         "description": "Send URL and get reviews or product details",
         "endpoints": {
             "POST /scrape": "Scrape reviews with fast product info from URL",
-            "POST /product-details": "Get comprehensive product details (price, rating, store info, description)",
+            "POST /scrape-with-details": "Scrape reviews + comprehensive product details (NEW)",
+            "POST /product-details": "Get comprehensive product details only",
             "GET /extract-product-info": "Extract product info from URL only (very fast)"
         },
         "scrape_example": {
@@ -371,26 +372,69 @@ async def root():
             "max_reviews_per_rating": 15,
             "headless": True
         },
+        "scrape_with_details_example": {
+            "url": "https://www.tokopedia.com/store/product-name-12345/review",
+            "target_ratings": [1, 2, 3, 4, 5],
+            "max_reviews_per_rating": 15,
+            "headless": True
+        },
+        "scrape_with_details_response": {
+            "product_details": {
+                "product_name": "Nintendo Switch OLED Model",
+                "price": "Rp5.349.000",
+                "rating": "5.0",
+                "rating_count": "1.405 rating",
+                "sold_count": "2 rb+",
+                "description": "Nintendo Switch OLED Model merupakan konsol gaming...",
+                "store_name": "Butikgames",
+                "store_type": "Official Store",
+                "store_rating": "4.9",
+                "store_review_count": "135 rb",
+                "processing_time": "± 2 jam pesanan diproses",
+                "product_url": "https://www.tokopedia.com/store/product-name",
+                "review_url": "https://www.tokopedia.com/store/product-name/review",
+                "scraped_at": "2025-07-17T10:30:00"
+            },
+            "reviews": [
+                {
+                    "rating": 5,
+                    "reviewer_name": "J***n",
+                    "reviewer_name_normalized": "J n",
+                    "review_text": "Produk bagus, pengiriman cepat",
+                    "review_text_normalized": "produk bagus pengiriman cepat",
+                    "review_date": "1 minggu lalu",
+                    "review_date_normalized": "1 minggu lalu",
+                    "variant": "Neon, 128GB",
+                    "variant_normalized": "Neon 128GB",
+                    "rating_filter": 5,
+                    "scraped_at": "2025-07-17 10:30:00"
+                },
+                {
+                    "rating": 4,
+                    "reviewer_name": "A***i",
+                    "reviewer_name_normalized": "A i",
+                    "review_text": "Sesuai ekspektasi, recommended",
+                    "review_text_normalized": "sesuai ekspektasi recommended",
+                    "review_date": "2 minggu lalu",
+                    "review_date_normalized": "2 minggu lalu",
+                    "variant": "White, 128GB",
+                    "variant_normalized": "White 128GB",
+                    "rating_filter": 4,
+                    "scraped_at": "2025-07-17 10:30:00"
+                }
+            ],
+            "summary": {
+                "total_reviews_scraped": 75,
+                "target_ratings": [1, 2, 3, 4, 5],
+                "max_reviews_per_rating": 15,
+                "scraped_at": "2025-07-17T10:30:00"
+            }
+        },
         "product_details_example": {
             "url": "https://www.tokopedia.com/store/product-name-12345",
             "headless": True
         },
-        "product_details_response": {
-            "product_name": "Nintendo Switch OLED Model",
-            "price": "Rp5.349.000",
-            "rating": "5.0",
-            "rating_count": "1.405 rating",
-            "sold_count": "2 rb+",
-            "store_name": "Butikgames",
-            "store_type": "Official Store",
-            "store_rating": "4.9",
-            "store_review_count": "135 rb",
-            "processing_time": "± 2 jam pesanan diproses",
-            "description": "Nintendo Switch OLED Model merupakan konsol gaming...",
-            "scraped_at": "2025-07-17T10:30:00",
-            "product_url": "https://www.tokopedia.com/store/product-name"
-        },
-        "example_response": [
+        "old_scrape_response": [
             {
                 "rating": 2,
                 "reviewer_name": "R***i",
@@ -409,6 +453,87 @@ async def root():
             }
         ]
     }
+
+@app.post("/scrape-with-details")
+async def scrape_with_details(request: ScrapeRequest):
+    """Scrape reviews AND product details - Details shown once, reviews in array"""
+    try:
+        print(f"Starting comprehensive scraping for URL: {request.url}")
+        
+        # 1. Extract basic info from URL (fast)
+        product_name_from_url = extract_product_name_from_url(request.url)
+        store_name_from_url = extract_store_name_from_url(request.url)
+        
+        print(f"Product name from URL: {product_name_from_url}")
+        print(f"Store name from URL: {store_name_from_url}")
+        
+        # 2. Extract detailed product info (slower but comprehensive)
+        product_url = request.url.replace('/review', '') if '/review' in request.url else request.url
+        product_details = extract_product_details(product_url, request.headless)
+        
+        # 3. Initialize scraper for reviews
+        scraper = TokopediaReviewScraperImproved(headless=request.headless)
+        
+        try:
+            # 4. Scrape reviews
+            scraper.get_reviews_by_rating(
+                product_url=request.url,
+                target_ratings=request.target_ratings,
+                max_reviews_per_rating=request.max_reviews_per_rating
+            )
+            
+            # 5. Format reviews (NO PRODUCT DETAILS in each review)
+            formatted_reviews = []
+            for review in scraper.reviews_data:
+                formatted_review = {
+                    # Review data only
+                    "rating": review.get("rating", 0),
+                    "reviewer_name": review.get("reviewer_name", ""),
+                    "reviewer_name_normalized": review.get("reviewer_name_normalized", ""),
+                    "review_text": review.get("review_text", ""),
+                    "review_text_normalized": review.get("review_text_normalized", ""),
+                    "review_date": review.get("review_date", ""),
+                    "review_date_normalized": review.get("review_date_normalized", ""),
+                    "variant": review.get("variant", ""),
+                    "variant_normalized": review.get("variant_normalized", ""),
+                    "rating_filter": review.get("rating_filter", 0),
+                    "scraped_at": review.get("scraped_at", "")
+                }
+                formatted_reviews.append(formatted_review)
+            
+            # 6. Return structured data: Product Details + Reviews Array
+            return {
+                "product_details": {
+                    "product_name": product_details.get("product_name", product_name_from_url),
+                    "price": product_details.get("price", ""),
+                    "rating": product_details.get("rating", ""),
+                    "rating_count": product_details.get("rating_count", ""),
+                    "sold_count": product_details.get("sold_count", ""),
+                    "description": product_details.get("description", ""),
+                    "store_name": product_details.get("store_name", store_name_from_url),
+                    "store_type": product_details.get("store_type", ""),
+                    "store_rating": product_details.get("store_rating", ""),
+                    "store_review_count": product_details.get("store_review_count", ""),
+                    "processing_time": product_details.get("processing_time", ""),
+                    "product_url": product_url,
+                    "review_url": request.url,
+                    "scraped_at": product_details.get("scraped_at", datetime.now().isoformat())
+                },
+                "reviews": formatted_reviews,
+                "summary": {
+                    "total_reviews_scraped": len(formatted_reviews),
+                    "target_ratings": request.target_ratings,
+                    "max_reviews_per_rating": request.max_reviews_per_rating,
+                    "scraped_at": datetime.now().isoformat()
+                }
+            }
+            
+        finally:
+            scraper.close()
+            
+    except Exception as e:
+        print(f"Error during comprehensive scraping: {e}")
+        raise HTTPException(status_code=500, detail=f"Comprehensive scraping failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
