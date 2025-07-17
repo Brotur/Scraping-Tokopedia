@@ -147,91 +147,167 @@ def extract_product_details(url, headless=True):
         driver.get(clean_url)
         
         # Wait for page to load
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 15)
         
         # Extract basic product info
         try:
-            # Product name
-            product_name = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductName"]'))).text
-            product_details['product_name'] = product_name
+            # Product name - try multiple selectors
+            product_name = ""
+            selectors = [
+                '[data-testid="lblPDPDetailProductName"]',
+                'h1[data-testid="lblPDPDetailProductName"]',
+                '.css-1os9jjn',
+                'h1'
+            ]
+            
+            for selector in selectors:
+                try:
+                    element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
+                    product_name = element.text.strip()
+                    if product_name:
+                        break
+                except:
+                    continue
+            
+            product_details['product_name'] = product_name if product_name else extract_product_name_from_url(url)
         except:
             product_details['product_name'] = extract_product_name_from_url(url)
         
         # Extract price
         try:
-            price_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductPrice"]')
-            product_details['price'] = price_element.text
+            price_selectors = [
+                '[data-testid="lblPDPDetailProductPrice"]',
+                '.price',
+                '[data-testid="lblPDPDetailProductPrice"] span',
+                '.css-1ksb19c',
+                '.css-o5uqvq'
+            ]
+            
+            price = ""
+            for selector in price_selectors:
+                try:
+                    price_element = driver.find_element(By.CSS_SELECTOR, selector)
+                    price = price_element.text.strip()
+                    if price and 'Rp' in price:
+                        break
+                except:
+                    continue
+            
+            product_details['price'] = price
         except:
             product_details['price'] = ""
         
-        # Extract rating and rating count
+        # Extract rating - focus on main span only
         try:
-            rating_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductRatingNumber"]')
-            product_details['rating'] = rating_element.text
+            rating = ""
+            try:
+                rating_element = driver.find_element(By.CSS_SELECTOR, 'span.main[data-testid="lblPDPDetailProductRatingNumber"]')
+                rating = rating_element.text.strip()
+            except:
+                try:
+                    rating_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductRatingNumber"]')
+                    rating = rating_element.text.strip()
+                except:
+                    pass
+            
+            product_details['rating'] = rating
         except:
             product_details['rating'] = ""
         
+        # Extract rating count - look for exact pattern
         try:
-            rating_count_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductRatingCounter"]')
-            product_details['rating_count'] = rating_count_element.text
+            rating_count = ""
+            try:
+                rating_count_element = driver.find_element(By.CSS_SELECTOR, 'span[data-testid="lblPDPDetailProductRatingCounter"]')
+                rating_count = rating_count_element.text.strip()
+            except:
+                pass
+            
+            product_details['rating_count'] = rating_count
         except:
             product_details['rating_count'] = ""
         
-        # Extract sold count
+        # Extract sold count - look for exact pattern and exclude "Subtotal"
         try:
-            sold_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductSoldCounter"]')
-            product_details['sold_count'] = sold_element.text
+            sold_count = ""
+            try:
+                sold_element = driver.find_element(By.CSS_SELECTOR, 'p[data-testid="lblPDPDetailProductSoldCounter"]')
+                sold_text = sold_element.text.strip()
+                # Filter out "Subtotal" and only get text with "Terjual"
+                if 'terjual' in sold_text.lower() and 'subtotal' not in sold_text.lower():
+                    sold_count = sold_text
+            except:
+                pass
+            
+            product_details['sold_count'] = sold_count
         except:
             product_details['sold_count'] = ""
         
         # Extract store information
         try:
-            store_name_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="llbPDPFooterShopName"]')
-            product_details['store_name'] = store_name_element.text
+            store_selectors = [
+                '[data-testid="llbPDPFooterShopName"]',
+                '[data-testid="lblPDPFooterShopName"]',
+                '.shop-name',
+                '.css-1rn0irl'
+            ]
+            
+            store_name = ""
+            for selector in store_selectors:
+                try:
+                    store_name_element = driver.find_element(By.CSS_SELECTOR, selector)
+                    store_name = store_name_element.text.strip()
+                    if store_name:
+                        break
+                except:
+                    continue
+            
+            product_details['store_name'] = store_name if store_name else extract_store_name_from_url(url)
         except:
             product_details['store_name'] = extract_store_name_from_url(url)
-        
-        # Extract store type (Official Store, etc.)
-        try:
-            store_type_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopType"]')
-            product_details['store_type'] = store_type_element.text
-        except:
-            product_details['store_type'] = ""
-        
-        # Extract store rating
-        try:
-            store_rating_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopRating"]')
-            product_details['store_rating'] = store_rating_element.text
-        except:
-            product_details['store_rating'] = ""
-        
-        # Extract store review count
-        try:
-            store_review_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopReviewCount"]')
-            product_details['store_review_count'] = store_review_element.text
-        except:
-            product_details['store_review_count'] = ""
-        
-        # Extract processing time
-        try:
-            processing_time_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopProcessTime"]')
-            product_details['processing_time'] = processing_time_element.text
-        except:
-            product_details['processing_time'] = ""
         
         # Extract product description
         try:
             # Try to click "Selengkapnya" button if it exists
             try:
-                selengkapnya_button = driver.find_element(By.CSS_SELECTOR, '[data-testid="btnPDPDescriptionSeeMore"]')
-                driver.execute_script("arguments[0].click();", selengkapnya_button)
-                time.sleep(1)
+                selengkapnya_selectors = [
+                    '[data-testid="btnPDPDescriptionSeeMore"]',
+                    '.see-more',
+                    '.selengkapnya',
+                    'button[data-testid="btnPDPDescriptionSeeMore"]'
+                ]
+                
+                for selector in selengkapnya_selectors:
+                    try:
+                        selengkapnya_button = driver.find_element(By.CSS_SELECTOR, selector)
+                        if selengkapnya_button.is_displayed():
+                            driver.execute_script("arguments[0].click();", selengkapnya_button)
+                            time.sleep(1)
+                            break
+                    except:
+                        continue
             except:
                 pass
             
             # Extract full description
-            description_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDescriptionProduk"]')
-            product_details['description'] = description_element.text
+            description_selectors = [
+                '[data-testid="lblPDPDescriptionProduk"]',
+                '.product-description',
+                '.css-175oi2r',
+                '.description'
+            ]
+            
+            description = ""
+            for selector in description_selectors:
+                try:
+                    description_element = driver.find_element(By.CSS_SELECTOR, selector)
+                    description = description_element.text.strip()
+                    if description and len(description) > 50:
+                        break
+                except:
+                    continue
+            
+            product_details['description'] = description
         except:
             product_details['description'] = ""
         
@@ -239,10 +315,26 @@ def extract_product_details(url, headless=True):
         product_details['scraped_at'] = datetime.now().isoformat()
         product_details['product_url'] = clean_url
         
-        return product_details
+        # Remove empty fields - only keep fields with actual data
+        cleaned_product_details = {}
+        for key, value in product_details.items():
+            if value and str(value).strip():  # Only keep non-empty values
+                cleaned_product_details[key] = value
+        
+        # Log what we found
+        print(f"[OK] Product Name: {cleaned_product_details.get('product_name', 'Not found')}")
+        print(f"[OK] Price: {cleaned_product_details.get('price', 'Not found')}")
+        print(f"[OK] Rating: {cleaned_product_details.get('rating', 'Not found')}")
+        print(f"[OK] Rating Count: {cleaned_product_details.get('rating_count', 'Not found')}")
+        print(f"[OK] Sold Count: {cleaned_product_details.get('sold_count', 'Not found')}")
+        print(f"[OK] Store Name: {cleaned_product_details.get('store_name', 'Not found')}")
+        print(f"[OK] Description Length: {len(cleaned_product_details.get('description', ''))}")
+        
+        return cleaned_product_details
         
     except Exception as e:
-        print(f"Error extracting product details: {e}")
+        print(f"[ERROR] Error extracting product details: {e}")
+        # Return only essential fields when error occurs
         return {
             'error': str(e),
             'product_name': extract_product_name_from_url(url),
@@ -387,10 +479,10 @@ async def root():
                 "sold_count": "2 rb+",
                 "description": "Nintendo Switch OLED Model merupakan konsol gaming...",
                 "store_name": "Butikgames",
-                "store_type": "Official Store",
                 "store_rating": "4.9",
                 "store_review_count": "135 rb",
                 "processing_time": "± 2 jam pesanan diproses",
+                "shipped_from": "Kota Administrasi Jakarta Pusat",
                 "product_url": "https://www.tokopedia.com/store/product-name",
                 "review_url": "https://www.tokopedia.com/store/product-name/review",
                 "scraped_at": "2025-07-17T10:30:00"
@@ -407,19 +499,6 @@ async def root():
                     "variant": "Neon, 128GB",
                     "variant_normalized": "Neon 128GB",
                     "rating_filter": 5,
-                    "scraped_at": "2025-07-17 10:30:00"
-                },
-                {
-                    "rating": 4,
-                    "reviewer_name": "A***i",
-                    "reviewer_name_normalized": "A i",
-                    "review_text": "Sesuai ekspektasi, recommended",
-                    "review_text_normalized": "sesuai ekspektasi recommended",
-                    "review_date": "2 minggu lalu",
-                    "review_date_normalized": "2 minggu lalu",
-                    "variant": "White, 128GB",
-                    "variant_normalized": "White 128GB",
-                    "rating_filter": 4,
                     "scraped_at": "2025-07-17 10:30:00"
                 }
             ],
@@ -501,24 +580,35 @@ async def scrape_with_details(request: ScrapeRequest):
                 }
                 formatted_reviews.append(formatted_review)
             
-            # 6. Return structured data: Product Details + Reviews Array
+            # 6. Prepare clean product details (only fields with data)
+            clean_product_details = {}
+            
+            # Essential fields (always include)
+            clean_product_details["product_name"] = product_details.get("product_name", product_name_from_url)
+            clean_product_details["store_name"] = product_details.get("store_name", store_name_from_url)
+            clean_product_details["product_url"] = product_url
+            clean_product_details["review_url"] = request.url
+            clean_product_details["scraped_at"] = product_details.get("scraped_at", datetime.now().isoformat())
+            
+            # Optional fields (only if they have data)
+            if product_details.get("price"):
+                clean_product_details["price"] = product_details["price"]
+            
+            if product_details.get("rating"):
+                clean_product_details["rating"] = product_details["rating"]
+            
+            if product_details.get("rating_count"):
+                clean_product_details["rating_count"] = product_details["rating_count"]
+            
+            if product_details.get("sold_count"):
+                clean_product_details["sold_count"] = product_details["sold_count"]
+            
+            if product_details.get("description"):
+                clean_product_details["description"] = product_details["description"]
+            
+            # 7. Return clean structured data
             return {
-                "product_details": {
-                    "product_name": product_details.get("product_name", product_name_from_url),
-                    "price": product_details.get("price", ""),
-                    "rating": product_details.get("rating", ""),
-                    "rating_count": product_details.get("rating_count", ""),
-                    "sold_count": product_details.get("sold_count", ""),
-                    "description": product_details.get("description", ""),
-                    "store_name": product_details.get("store_name", store_name_from_url),
-                    "store_type": product_details.get("store_type", ""),
-                    "store_rating": product_details.get("store_rating", ""),
-                    "store_review_count": product_details.get("store_review_count", ""),
-                    "processing_time": product_details.get("processing_time", ""),
-                    "product_url": product_url,
-                    "review_url": request.url,
-                    "scraped_at": product_details.get("scraped_at", datetime.now().isoformat())
-                },
+                "product_details": clean_product_details,
                 "reviews": formatted_reviews,
                 "summary": {
                     "total_reviews_scraped": len(formatted_reviews),
