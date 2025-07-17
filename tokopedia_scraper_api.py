@@ -5,6 +5,11 @@ import time
 import re
 import urllib.parse
 from datetime import datetime
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 # Import scraper class yang sudah ada
 from tokopedia_scraper_improved import TokopediaReviewScraperImproved
@@ -24,6 +29,16 @@ class ScrapeRequest(BaseModel):
             if rating not in [1, 2, 3, 4, 5]:
                 raise ValueError('Ratings must be between 1 and 5')
         return v
+    
+    @field_validator('url')
+    def validate_url(cls, v):
+        if 'tokopedia.com' not in v:
+            raise ValueError('URL must be from tokopedia.com')
+        return v
+
+class ProductDetailsRequest(BaseModel):
+    url: str
+    headless: Optional[bool] = True
     
     @field_validator('url')
     def validate_url(cls, v):
@@ -103,6 +118,142 @@ def extract_store_name_from_url(url):
         print(f"Error extracting store name from URL: {e}")
         return "Unknown Store"
 
+def setup_driver(headless=True):
+    """Setup Chrome driver dengan konfigurasi optimal"""
+    options = webdriver.ChromeOptions()
+    if headless:
+        options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+    
+    driver = webdriver.Chrome(options=options)
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    return driver
+
+def extract_product_details(url, headless=True):
+    """Extract comprehensive product details from Tokopedia product page"""
+    driver = setup_driver(headless)
+    product_details = {}
+    
+    try:
+        # Clean URL (remove /review if present)
+        clean_url = url.replace('/review', '') if '/review' in url else url
+        
+        print(f"Loading product page: {clean_url}")
+        driver.get(clean_url)
+        
+        # Wait for page to load
+        wait = WebDriverWait(driver, 10)
+        
+        # Extract basic product info
+        try:
+            # Product name
+            product_name = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductName"]'))).text
+            product_details['product_name'] = product_name
+        except:
+            product_details['product_name'] = extract_product_name_from_url(url)
+        
+        # Extract price
+        try:
+            price_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductPrice"]')
+            product_details['price'] = price_element.text
+        except:
+            product_details['price'] = ""
+        
+        # Extract rating and rating count
+        try:
+            rating_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductRatingNumber"]')
+            product_details['rating'] = rating_element.text
+        except:
+            product_details['rating'] = ""
+        
+        try:
+            rating_count_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductRatingCounter"]')
+            product_details['rating_count'] = rating_count_element.text
+        except:
+            product_details['rating_count'] = ""
+        
+        # Extract sold count
+        try:
+            sold_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDetailProductSoldCounter"]')
+            product_details['sold_count'] = sold_element.text
+        except:
+            product_details['sold_count'] = ""
+        
+        # Extract store information
+        try:
+            store_name_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="llbPDPFooterShopName"]')
+            product_details['store_name'] = store_name_element.text
+        except:
+            product_details['store_name'] = extract_store_name_from_url(url)
+        
+        # Extract store type (Official Store, etc.)
+        try:
+            store_type_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopType"]')
+            product_details['store_type'] = store_type_element.text
+        except:
+            product_details['store_type'] = ""
+        
+        # Extract store rating
+        try:
+            store_rating_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopRating"]')
+            product_details['store_rating'] = store_rating_element.text
+        except:
+            product_details['store_rating'] = ""
+        
+        # Extract store review count
+        try:
+            store_review_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopReviewCount"]')
+            product_details['store_review_count'] = store_review_element.text
+        except:
+            product_details['store_review_count'] = ""
+        
+        # Extract processing time
+        try:
+            processing_time_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPFooterShopProcessTime"]')
+            product_details['processing_time'] = processing_time_element.text
+        except:
+            product_details['processing_time'] = ""
+        
+        # Extract product description
+        try:
+            # Try to click "Selengkapnya" button if it exists
+            try:
+                selengkapnya_button = driver.find_element(By.CSS_SELECTOR, '[data-testid="btnPDPDescriptionSeeMore"]')
+                driver.execute_script("arguments[0].click();", selengkapnya_button)
+                time.sleep(1)
+            except:
+                pass
+            
+            # Extract full description
+            description_element = driver.find_element(By.CSS_SELECTOR, '[data-testid="lblPDPDescriptionProduk"]')
+            product_details['description'] = description_element.text
+        except:
+            product_details['description'] = ""
+        
+        # Add metadata
+        product_details['scraped_at'] = datetime.now().isoformat()
+        product_details['product_url'] = clean_url
+        
+        return product_details
+        
+    except Exception as e:
+        print(f"Error extracting product details: {e}")
+        return {
+            'error': str(e),
+            'product_name': extract_product_name_from_url(url),
+            'store_name': extract_store_name_from_url(url),
+            'product_url': url.replace('/review', '') if '/review' in url else url,
+            'scraped_at': datetime.now().isoformat()
+        }
+    
+    finally:
+        driver.quit()
+
 @app.post("/scrape")
 async def scrape_reviews(request: ScrapeRequest):
     """Scrape reviews and return results directly"""
@@ -166,6 +317,21 @@ async def scrape_reviews(request: ScrapeRequest):
         print(f"Error during scraping: {e}")
         raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}")
 
+@app.post("/product-details")
+async def get_product_details(request: ProductDetailsRequest):
+    """Extract comprehensive product details including price, rating, store info, and description"""
+    try:
+        print(f"Extracting product details for URL: {request.url}")
+        
+        # Extract detailed product information
+        product_details = extract_product_details(request.url, request.headless)
+        
+        return product_details
+        
+    except Exception as e:
+        print(f"Error extracting product details: {e}")
+        raise HTTPException(status_code=500, detail=f"Product details extraction failed: {str(e)}")
+
 @app.get("/extract-product-info")
 async def extract_product_info(url: str):
     """Extract product info from URL only (very fast)"""
@@ -193,16 +359,36 @@ async def root():
     return {
         "message": "Tokopedia Review Scraper Simple API",
         "version": "1.0.0",
-        "description": "Send URL and get reviews directly with fast product name extraction",
+        "description": "Send URL and get reviews or product details",
         "endpoints": {
             "POST /scrape": "Scrape reviews with fast product info from URL",
+            "POST /product-details": "Get comprehensive product details (price, rating, store info, description)",
             "GET /extract-product-info": "Extract product info from URL only (very fast)"
         },
-        "example_request": {
+        "scrape_example": {
             "url": "https://www.tokopedia.com/store/product-name-12345/review",
             "target_ratings": [1, 2, 3, 4, 5],
             "max_reviews_per_rating": 15,
             "headless": True
+        },
+        "product_details_example": {
+            "url": "https://www.tokopedia.com/store/product-name-12345",
+            "headless": True
+        },
+        "product_details_response": {
+            "product_name": "Nintendo Switch OLED Model",
+            "price": "Rp5.349.000",
+            "rating": "5.0",
+            "rating_count": "1.405 rating",
+            "sold_count": "2 rb+",
+            "store_name": "Butikgames",
+            "store_type": "Official Store",
+            "store_rating": "4.9",
+            "store_review_count": "135 rb",
+            "processing_time": "± 2 jam pesanan diproses",
+            "description": "Nintendo Switch OLED Model merupakan konsol gaming...",
+            "scraped_at": "2025-07-17T10:30:00",
+            "product_url": "https://www.tokopedia.com/store/product-name"
         },
         "example_response": [
             {
