@@ -648,9 +648,7 @@ function displayAIRecommendation(aiAnalysis) {
         analysisText.innerHTML = `
             <div class="comprehensive-analysis">
                 <h4>🔍 Analisis Komprehensif</h4>
-                <div class="analysis-content">
-                    <p>${aiAnalysis.comprehensive_analysis}</p>
-                </div>
+                <p>${aiAnalysis.comprehensive_analysis}</p>
             </div>
         `;
     } else {
