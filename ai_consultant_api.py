@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware  # Add this import
 from pydantic import BaseModel, field_validator
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -9,6 +9,7 @@ import json
 import requests
 import uvicorn
 from datetime import datetime
+import re
 
 # Load environment variables
 load_dotenv()
@@ -38,6 +39,19 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+# Enhanced models for sentiment analysis
+class SentimentData(BaseModel):
+    positive_count: int
+    neutral_count: int
+    negative_count: int
+    total_count: int
+    positive_percentage: float
+    neutral_percentage: float
+    negative_percentage: float
+    sentiment_summary: str
+    key_themes: List[str]
+    emotional_indicators: Dict[str, Any]
 
 class ProductData(BaseModel):
     name: str
@@ -145,6 +159,108 @@ class ConsultationResponse(BaseModel):
     cons: List[str]
     key_insights: List[str]
     budget_analysis: Optional[str] = None
+    sentiment_analysis: Optional[SentimentData] = None
+
+def analyze_sentiment_with_gemini(reviews: List[ReviewData]) -> SentimentData:
+    """Analyze sentiment of reviews using Gemini AI"""
+    try:
+        if not reviews or len(reviews) == 0:
+            return SentimentData(
+                positive_count=0,
+                neutral_count=0,
+                negative_count=0,
+                total_count=0,
+                positive_percentage=0.0,
+                neutral_percentage=0.0,
+                negative_percentage=0.0,
+                sentiment_summary="Tidak ada review untuk dianalisis",
+                key_themes=[],
+                emotional_indicators={}
+            )
+        
+        # Prepare review text for analysis
+        review_texts = []
+        for review in reviews[:50]:  # Limit to 50 reviews for efficiency
+            review_text = f"Rating: {review.rating}/5 - {review.review_text[:200]}"
+            review_texts.append(review_text)
+        
+        combined_reviews = "\n".join(review_texts)
+        
+        prompt = f"""
+Analisis sentimen dari {len(reviews)} review produk Tokopedia berikut:
+
+REVIEW DATA:
+{combined_reviews}
+
+Lakukan analisis sentimen mendalam dan berikan hasil dalam format JSON berikut:
+
+{{
+    "positive_count": jumlah_review_positif,
+    "neutral_count": jumlah_review_netral,
+    "negative_count": jumlah_review_negatif,
+    "total_count": {len(reviews)},
+    "positive_percentage": persentase_positif,
+    "neutral_percentage": persentase_netral,
+    "negative_percentage": persentase_negatif,
+    "sentiment_summary": "Ringkasan analisis sentimen keseluruhan dalam bahasa Indonesia",
+    "key_themes": ["tema1", "tema2", "tema3"],
+    "emotional_indicators": {{
+        "satisfaction_level": "tinggi/sedang/rendah",
+        "complaint_patterns": ["pola_keluhan_utama"],
+        "praise_patterns": ["pola_pujian_utama"],
+        "recommendation_likelihood": "tinggi/sedang/rendah"
+    }}
+}}
+
+KRITERIA SENTIMEN:
+- POSITIF: Rating 4-5, kata-kata positif, merekomendasikan
+- NETRAL: Rating 3, campuran positif-negatif, tidak ada emosi kuat
+- NEGATIF: Rating 1-2, kata-kata negatif, kecewa, tidak merekomendasikan
+
+Berikan analisis yang akurat dan mendalam berdasarkan konten review yang sebenarnya.
+"""
+        
+        print(f"🤖 Analyzing sentiment for {len(reviews)} reviews with Gemini...")
+        
+        response = model.generate_content(prompt)
+        response_text = response.text.strip()
+        
+        # Extract JSON from response
+        json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+        if json_match:
+            json_str = json_match.group()
+            sentiment_data = json.loads(json_str)
+            
+            return SentimentData(
+                positive_count=sentiment_data.get('positive_count', 0),
+                neutral_count=sentiment_data.get('neutral_count', 0),
+                negative_count=sentiment_data.get('negative_count', 0),
+                total_count=sentiment_data.get('total_count', len(reviews)),
+                positive_percentage=float(sentiment_data.get('positive_percentage', 0.0)),
+                neutral_percentage=float(sentiment_data.get('neutral_percentage', 0.0)),
+                negative_percentage=float(sentiment_data.get('negative_percentage', 0.0)),
+                sentiment_summary=sentiment_data.get('sentiment_summary', ''),
+                key_themes=sentiment_data.get('key_themes', []),
+                emotional_indicators=sentiment_data.get('emotional_indicators', {})
+            )
+        else:
+            raise ValueError("Could not extract JSON from Gemini response")
+            
+    except Exception as e:
+        print(f"❌ Error in sentiment analysis: {e}")
+        # Return fallback data
+        return SentimentData(
+            positive_count=0,
+            neutral_count=0,
+            negative_count=0,
+            total_count=len(reviews) if reviews else 0,
+            positive_percentage=0.0,
+            neutral_percentage=0.0,
+            negative_percentage=0.0,
+            sentiment_summary=f"Error dalam analisis sentimen: {str(e)}",
+            key_themes=[],
+            emotional_indicators={}
+        )
 
 def create_analysis_prompt(product_data: ProductData, user_budget: Optional[float] = None, user_preferences: Optional[str] = None) -> str:
     """Create detailed prompt for Gemini AI analysis"""
@@ -190,7 +306,7 @@ Berikan analisis yang objektif dan membantu pengambilan keputusan.
 """
     return prompt
 
-def create_enhanced_analysis_prompt(product_details: ScrapingProductDetails, reviews: Optional[List[ReviewData]] = None, summary: Optional[ScrapingSummary] = None, user_budget: Optional[float] = None, user_preferences: Optional[str] = None) -> str:
+def create_enhanced_analysis_prompt(product_details: ScrapingProductDetails, reviews: Optional[List[ReviewData]] = None, summary: Optional[ScrapingSummary] = None, user_budget: Optional[float] = None, user_preferences: Optional[str] = None, sentiment_data: Optional[SentimentData] = None) -> str:
     """Create enhanced prompt with full scraping data including comprehensive review analysis"""
     
     # Comprehensive review analysis
@@ -515,13 +631,21 @@ async def get_flexible_ai_consultation(request: FlexibleAIRequest):
             print(f"💰 User budget: {request.user_budget}")
             print(f"📝 User preferences: {request.user_preferences}")
             
+            # Perform sentiment analysis if reviews are available
+            sentiment_data = None
+            if request.reviews and len(request.reviews) > 0:
+                print(f"🤖 Performing sentiment analysis on {len(request.reviews)} reviews...")
+                sentiment_data = analyze_sentiment_with_gemini(request.reviews)
+                print(f"📊 Sentiment analysis completed: {sentiment_data.positive_percentage}% positive")
+            
             # Create enhanced analysis prompt
             prompt = create_enhanced_analysis_prompt(
                 product_details=request.product_details,
                 reviews=request.reviews,
                 summary=request.summary,
                 user_budget=request.user_budget,
-                user_preferences=request.user_preferences
+                user_preferences=request.user_preferences,
+                sentiment_data=sentiment_data
             )
             
             print(f"🤖 Analyzing product with reviews: {request.product_details.product_name}")
@@ -593,7 +717,8 @@ async def get_flexible_ai_consultation(request: FlexibleAIRequest):
                 pros=ai_analysis["pros"],
                 cons=ai_analysis["cons"],
                 key_insights=ai_analysis["key_insights"],
-                budget_analysis=ai_analysis.get("budget_analysis")
+                budget_analysis=ai_analysis.get("budget_analysis"),
+                sentiment_analysis=sentiment_data
             )
             
             print(f"✅ Analysis completed: {consultation_response.recommendation}")

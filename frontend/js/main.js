@@ -260,9 +260,9 @@ async function getAIAnalysis(scrapingData, userBudget, userPreferences) {
                     store_name: productDetails.store_name,
                     product_url: productDetails.product_url || '',
                     price: productDetails.price,
-                    rating: productDetails.rating,
-                    rating_count: productDetails.rating_count,
-                    sold_count: productDetails.sold_count,
+                    rating: productDetails.rating || 0,
+                    rating_count: productDetails.rating_count || 0,
+                    sold_count: productDetails.sold_count || 'Tidak tersedia',
                     description: productDetails.description || 'Tidak tersedia'
                 },
                 reviews: scrapingData.reviews,
@@ -280,9 +280,9 @@ async function getAIAnalysis(scrapingData, userBudget, userPreferences) {
                         store_name: productDetails.store_name,
                         product_url: productDetails.product_url || '',
                         price: productDetails.price,
-                        rating: productDetails.rating,
-                        rating_count: productDetails.rating_count,
-                        sold_count: productDetails.sold_count,
+                        rating: productDetails.rating || 0,
+                        rating_count: productDetails.rating_count || 0,
+                        sold_count: productDetails.sold_count || 'Tidak tersedia',
                         description: productDetails.description || 'Tidak tersedia'
                     }
                 };
@@ -364,7 +364,18 @@ function displayResults(productData, aiAnalysis) {
     
     // Analysis details
     displayAnalysisDetails(aiAnalysis);
+    
+    // Display sentiment analysis from AI if available
+    if (aiAnalysis.sentiment_analysis) {
+        displayAISentimentAnalysis(aiAnalysis.sentiment_analysis);
+    } else if (productData.reviews && productData.reviews.length > 0) {
+        // Fallback to frontend sentiment analysis
+        sentimentAnalyzer.displayChart(productData.reviews);
+    }
 }
+
+// Initialize sentiment analyzer
+const sentimentAnalyzer = new SentimentAnalyzer();
 
 // Display product information
 function displayProductInfo(scrapingData) {
@@ -422,6 +433,143 @@ function displayProductInfo(scrapingData) {
     }
     
     console.log('✅ Product info displayed successfully');
+}
+
+// Display AI-powered sentiment analysis
+function displayAISentimentAnalysis(sentimentData) {
+    console.log('🤖 Displaying AI sentiment analysis:', sentimentData);
+    
+    const sentimentContainer = document.getElementById('sentimentChart');
+    if (!sentimentContainer) return;
+    
+    // Create enhanced sentiment display
+    sentimentContainer.innerHTML = `
+        <div class="sentiment-ai-analysis">
+            <h3>🤖 AI Sentiment Analysis</h3>
+            
+            <div class="sentiment-summary">
+                <div class="sentiment-percentages">
+                    <div class="sentiment-item positive">
+                        <div class="sentiment-icon">😊</div>
+                        <div class="sentiment-data">
+                            <span class="sentiment-label">Positif</span>
+                            <span class="sentiment-value">${sentimentData.positive_percentage}%</span>
+                            <span class="sentiment-count">(${sentimentData.positive_count} ulasan)</span>
+                        </div>
+                    </div>
+                    <div class="sentiment-item neutral">
+                        <div class="sentiment-icon">😐</div>
+                        <div class="sentiment-data">
+                            <span class="sentiment-label">Netral</span>
+                            <span class="sentiment-value">${sentimentData.neutral_percentage}%</span>
+                            <span class="sentiment-count">(${sentimentData.neutral_count} ulasan)</span>
+                        </div>
+                    </div>
+                    <div class="sentiment-item negative">
+                        <div class="sentiment-icon">😞</div>
+                        <div class="sentiment-data">
+                            <span class="sentiment-label">Negatif</span>
+                            <span class="sentiment-value">${sentimentData.negative_percentage}%</span>
+                            <span class="sentiment-count">(${sentimentData.negative_count} ulasan)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sentiment-insights">
+                    <div class="sentiment-summary-text">
+                        <h4>📊 Ringkasan Sentiment</h4>
+                        <p>${sentimentData.sentiment_summary}</p>
+                    </div>
+                    
+                    ${sentimentData.key_themes && sentimentData.key_themes.length > 0 ? `
+                        <div class="sentiment-themes">
+                            <h4>🔍 Tema Utama</h4>
+                            <div class="theme-tags">
+                                ${sentimentData.key_themes.map(theme => `
+                                    <span class="theme-tag">${theme}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${sentimentData.emotional_indicators && sentimentData.emotional_indicators.length > 0 ? `
+                        <div class="sentiment-emotions">
+                            <h4>💭 Indikator Emosional</h4>
+                            <div class="emotion-tags">
+                                ${sentimentData.emotional_indicators.map(emotion => `
+                                    <span class="emotion-tag">${emotion}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            <div class="sentiment-chart-container">
+                <canvas id="aiSentimentChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    `;
+    
+    // Create chart using Chart.js
+    const ctx = document.getElementById('aiSentimentChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Positif', 'Netral', 'Negatif'],
+            datasets: [{
+                data: [
+                    sentimentData.positive_percentage,
+                    sentimentData.neutral_percentage,
+                    sentimentData.negative_percentage
+                ],
+                backgroundColor: [
+                    '#4CAF50',
+                    '#FFC107',
+                    '#F44336'
+                ],
+                borderColor: [
+                    '#45a049',
+                    '#ffb300',
+                    '#da190b'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const counts = [
+                                sentimentData.positive_count,
+                                sentimentData.neutral_count,
+                                sentimentData.negative_count
+                            ];
+                            return `${label}: ${value}% (${counts[context.dataIndex]} ulasan)`;
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateScale: true,
+                duration: 1500
+            }
+        }
+    });
+    
+    console.log('✅ AI sentiment analysis displayed successfully');
 }
 
 // Display AI recommendation with enhanced confidence visualization

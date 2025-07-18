@@ -457,6 +457,245 @@ input[type="text"]:focus {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Sentiment Analysis Chart */
+.sentiment-chart-container {
+    margin-top: 20px;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    border: 2px solid #dee2e6;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sentiment-chart-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+
+.sentiment-chart-container h4 {
+    color: #2d3748;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.sentiment-chart-container h4 i {
+    color: #667eea;
+    font-size: 1.5rem;
+}
+
+.sentiment-chart-wrapper {
+    position: relative;
+    height: 300px;
+    margin: 25px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.sentiment-chart-wrapper canvas {
+    max-width: 100%;
+    max-height: 100%;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.sentiment-summary {
+    margin-top: 25px;
+}
+
+.sentiment-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.sentiment-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.sentiment-stat:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.sentiment-stat.positive {
+    border-left: 5px solid #48bb78;
+}
+
+.sentiment-stat.positive:hover {
+    background: linear-gradient(135deg, #c6f6d5 0%, #e6fffa 100%);
+}
+
+.sentiment-stat.neutral {
+    border-left: 5px solid #ed8936;
+}
+
+.sentiment-stat.neutral:hover {
+    background: linear-gradient(135deg, #fdefb8 0%, #fef5e7 100%);
+}
+
+.sentiment-stat.negative {
+    border-left: 5px solid #f56565;
+}
+
+.sentiment-stat.negative:hover {
+    background: linear-gradient(135deg, #fed7d7 0%, #fef2f2 100%);
+}
+
+.sentiment-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.sentiment-stat:hover .sentiment-icon {
+    transform: scale(1.1);
+}
+
+.sentiment-label {
+    font-size: 0.95rem;
+    color: #718096;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sentiment-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2d3748;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.sentiment-insight {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 5px solid #4299e1;
+    color: #4a5568;
+    line-height: 1.7;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.sentiment-insight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #4299e1, #667eea, #764ba2);
+}
+
+.sentiment-insight strong {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+/* Responsive Design for Sentiment Chart */
+@media (max-width: 768px) {
+    .sentiment-chart-container {
+        padding: 20px;
+        margin-top: 15px;
+    }
+    
+    .sentiment-chart-container h4 {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+    
+    .sentiment-chart-wrapper {
+        height: 250px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .sentiment-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    
+    .sentiment-stat {
+        padding: 15px 8px;
+    }
+    
+    .sentiment-icon {
+        font-size: 2rem;
+    }
+    
+    .sentiment-value {
+        font-size: 1.4rem;
+    }
+    
+    .sentiment-label {
+        font-size: 0.8rem;
+    }
+    
+    .sentiment-insight {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sentiment-chart-container {
+        padding: 15px;
+    }
+    
+    .sentiment-chart-wrapper {
+        height: 200px;
+        padding: 15px;
+    }
+    
+    .sentiment-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .sentiment-stat {
+        padding: 12px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .sentiment-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0;
+        margin-right: 10px;
+    }
+    
+    .sentiment-value {
+        font-size: 1.2rem;
+    }
+    
+    .sentiment-label {
+        font-size: 0.85rem;
+        margin-bottom: 0;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .confidence-header {
@@ -775,4 +1014,276 @@ input[type="text"]:focus {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #5a67d8;
+}
+
+/* Sentiment Chart Animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    70% {
+        transform: scale(0.9);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.sentiment-chart-container {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.sentiment-stat {
+    animation: bounceIn 0.6s ease-out;
+}
+
+.sentiment-stat:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.sentiment-stat:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.sentiment-stat:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.sentiment-insight {
+    animation: slideInLeft 0.8s ease-out;
+    animation-delay: 0.8s;
+    animation-fill-mode: both;
+}
+
+/* AI Sentiment Analysis Styles */
+.sentiment-ai-analysis {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 20px;
+    border: 2px solid #dee2e6;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.sentiment-ai-analysis h3 {
+    color: #2d3748;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.sentiment-percentages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.sentiment-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.sentiment-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.sentiment-item.positive {
+    border-left: 5px solid #48bb78;
+}
+
+.sentiment-item.neutral {
+    border-left: 5px solid #ed8936;
+}
+
+.sentiment-item.negative {
+    border-left: 5px solid #f56565;
+}
+
+.sentiment-item .sentiment-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.sentiment-item .sentiment-data {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sentiment-item .sentiment-label {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sentiment-item .sentiment-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.sentiment-item .sentiment-count {
+    font-size: 0.85rem;
+    color: #a0aec0;
+}
+
+.sentiment-insights {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.sentiment-summary-text {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 5px solid #4299e1;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.sentiment-summary-text h4 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.sentiment-summary-text p {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+.sentiment-themes, .sentiment-emotions {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.sentiment-themes h4, .sentiment-emotions h4 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.theme-tags, .emotion-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.theme-tag, .emotion-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.theme-tag:hover, .emotion-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.sentiment-chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.sentiment-chart-container canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive Design for AI Sentiment Analysis */
+@media (max-width: 768px) {
+    .sentiment-percentages {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .sentiment-item {
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    .sentiment-item .sentiment-icon {
+        font-size: 1.5rem;
+    }
+    
+    .sentiment-item .sentiment-value {
+        font-size: 1.3rem;
+    }
+    
+    .sentiment-insights {
+        gap: 15px;
+    }
+    
+    .sentiment-summary-text,
+    .sentiment-themes,
+    .sentiment-emotions {
+        padding: 15px;
+    }
+    
+    .theme-tags, .emotion-tags {
+        gap: 6px;
+    }
+    
+    .theme-tag, .emotion-tag {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
 }

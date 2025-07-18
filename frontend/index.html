@@ -6,6 +6,7 @@
     <title>AI Shopping Consultant - Tokopedia Product Analyzer</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -91,6 +92,11 @@
                 
                 <!-- Review Analysis -->
                 <div id="reviewAnalysis"></div>
+                
+                <!-- AI Sentiment Analysis Chart -->
+                <div id="sentimentChart" class="sentiment-chart-container">
+                    <!-- This will be populated by AI sentiment analysis -->
+                </div>
             </div>
 
             <!-- AI Recommendation -->
@@ -142,6 +148,7 @@
         </footer>
     </div>
 
+    <script src="js/sentiment-analyzer.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sentiment Visualization</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Test Sentiment Visualization</h1>
+            <p>Preview untuk pie chart sentimen review</p>
+        </header>
+
+        <div class="card">
+            <div id="sentimentAnalysis" class="sentiment-chart-container">
+                <h4><i class="fas fa-chart-pie"></i> Analisis Sentimen Review</h4>
+                <div class="sentiment-chart-wrapper">
+                    <canvas id="sentimentChart"></canvas>
+                </div>
+                <div class="sentiment-summary">
+                    <div class="sentiment-stats">
+                        <div class="sentiment-stat positive">
+                            <span class="sentiment-icon">😊</span>
+                            <span class="sentiment-label">Positif</span>
+                            <span class="sentiment-value" id="positivePercent">53.6%</span>
+                        </div>
+                        <div class="sentiment-stat neutral">
+                            <span class="sentiment-icon">😐</span>
+                            <span class="sentiment-label">Netral</span>
+                            <span class="sentiment-value" id="neutralPercent">26.8%</span>
+                        </div>
+                        <div class="sentiment-stat negative">
+                            <span class="sentiment-icon">😞</span>
+                            <span class="sentiment-label">Negatif</span>
+                            <span class="sentiment-value" id="negativePercent">19.6%</span>
+                        </div>
+                    </div>
+                    <div class="sentiment-insight" id="sentimentInsight">
+                        <strong>Analisis komprehensif berdasarkan 56 review pelanggan:</strong> 
+                        Meskipun rating rata-rata 4.9 dan jumlah penjualan yang tinggi menunjukkan popularitas produk, 
+                        analisis review menunjukkan adanya ketidakkonsistensi dalam pengalaman pelanggan. 
+                        <strong>Sentimen positif (53.6%)</strong> lebih dominan daripada negatif (19.6%), 
+                        namun persentase review netral (26.8%) cukup signifikan dan menunjukkan adanya area perbaikan.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data matching your description: 56 reviews with the specified distribution
+        const sampleData = {
+            positive: 30,  // 53.6% of 56
+            neutral: 15,   // 26.8% of 56  
+            negative: 11,  // 19.6% of 56
+            total: 56,
+            positivePercent: 53.6,
+            neutralPercent: 26.8,
+            negativePercent: 19.6
+        };
+
+        // Initialize sentiment analyzer
+        const sentimentAnalyzer = new SentimentAnalyzer();
+
+        // Create sample reviews array for testing
+        const sampleReviews = [
+            // Positive reviews (rating 4-5)
+            ...Array(30).fill().map((_, i) => ({ rating: Math.random() > 0.5 ? 5 : 4, comment: `Review positif ${i+1}` })),
+            // Neutral reviews (rating 3)
+            ...Array(15).fill().map((_, i) => ({ rating: 3, comment: `Review netral ${i+1}` })),
+            // Negative reviews (rating 1-2)
+            ...Array(11).fill().map((_, i) => ({ rating: Math.random() > 0.5 ? 2 : 1, comment: `Review negatif ${i+1}` }))
+        ];
+
+        // Display chart when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use the sentiment analyzer class
+            sentimentAnalyzer.displayChart(sampleReviews);
+            
+            // Add some demo interactions
+            setTimeout(() => {
+                const stats = document.querySelectorAll('.sentiment-stat');
+                stats.forEach((stat, index) => {
+                    stat.addEventListener('click', function() {
+                        this.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 200);
+                    });
+                });
+            }, 2000);
+        });
+    </script>
+    <script src="js/sentiment-analyzer.js"></script>
+</body>
+</html>
