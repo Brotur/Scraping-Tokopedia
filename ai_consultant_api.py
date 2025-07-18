@@ -160,6 +160,14 @@ class ConsultationResponse(BaseModel):
     key_insights: List[str]
     budget_analysis: Optional[str] = None
     sentiment_analysis: Optional[SentimentData] = None
+    
+    # New comprehensive analysis fields
+    comprehensive_analysis: Optional[str] = None
+    key_considerations: Optional[List[str]] = None
+    buyer_advice: Optional[str] = None
+    risk_assessment: Optional[str] = None
+    value_proposition: Optional[str] = None
+    strategic_insights: Optional[List[str]] = None
 
 def analyze_sentiment_with_gemini(reviews: List[ReviewData]) -> SentimentData:
     """Analyze sentiment of reviews using Gemini AI"""
@@ -399,38 +407,64 @@ PREFERENSI USER:
 - Preferensi: {user_preferences or 'Tidak disebutkan'}
 
 INSTRUKSI ANALISIS:
-1. Gunakan SEMUA data review untuk memberikan analisis yang akurat
-2. Pertimbangkan sentimen pelanggan dan tema utama dari review
-3. Berikan confidence score berdasarkan konsistensi review dan data
-4. Identifikasi pola positif dan negatif dari pengalaman pelanggan
-5. Pertimbangkan faktor risiko dari review negatif
-6. Berikan rekomendasi yang objektif dan berbasis data
+Berikan analisis KOMPREHENSIF dari berbagai sudut pandang untuk membantu calon pembeli membuat keputusan yang tepat:
+
+1. **ANALISIS NILAI (Value Analysis)**
+   - Apakah harga sesuai dengan kualitas yang ditawarkan?
+   - Perbandingan dengan produk sejenis di pasaran
+   - Cost-benefit analysis berdasarkan fitur dan spesifikasi
+
+2. **ANALISIS KUALITAS & PERFORMA**
+   - Kualitas build berdasarkan review pelanggan
+   - Konsistensi performa produk
+   - Durabilitas dan umur pakai dari pengalaman pengguna
+
+3. **ANALISIS KEPUASAN PELANGGAN**
+   - Tingkat kepuasan berdasarkan rating dan review
+   - Masalah yang sering muncul dari review negatif
+   - Tingkat rekomendasi dari pembeli sebelumnya
+
+4. **ANALISIS RISIKO & PERTIMBANGAN**
+   - Potensi masalah yang mungkin terjadi
+   - Faktor-faktor yang perlu diwaspadai
+   - Strategi mitigasi risiko
+
+5. **ANALISIS STRATEGIS**
+   - Timing pembelian yang tepat
+   - Pertimbangan alternatif produk
+   - Faktor eksternal yang mempengaruhi keputusan
 
 Berikan analisis mendalam dan rekomendasi pembelian dalam format JSON berikut:
 
 {{
     "recommendation": "LAYAK_BELI" | "TIDAK_LAYAK_BELI" | "LAYAK_BELI_DENGAN_CATATAN",
     "confidence_score": 0.85,
-    "analysis": "Analisis komprehensif berdasarkan {len(reviews) if reviews else 0} review pelanggan dan data produk. Tingkat kepuasan pelanggan mencapai {positive_percentage:.1f}% dengan tema positif utama: {', '.join(top_positive_themes[:3]) if reviews else 'data tidak tersedia'}. Namun perlu diperhatikan {', '.join(top_negative_themes[:2]) if reviews else 'belum ada review negatif'}.",
-    "pros": ["Keunggulan berdasarkan review positif", "Poin kuat dari analisis sentimen", "Faktor positif lainnya"],
-    "cons": ["Kekurangan berdasarkan review negatif", "Poin lemah dari analisis sentimen", "Faktor negatif lainnya"],
-    "key_insights": ["Insight penting dari analisis review komprehensif", "Pola yang ditemukan dari sentimen pelanggan", "Rekomendasi berbasis data review"],
-    "budget_analysis": "Analisis kesesuaian dengan budget user berdasarkan value yang diberikan dari review pelanggan"
+    "analysis": "Analisis komprehensif yang mempertimbangkan berbagai sudut pandang - nilai, kualitas, kepuasan pelanggan, risiko, dan strategi. Berdasarkan {len(reviews) if reviews else 0} review pelanggan, tingkat kepuasan mencapai {positive_percentage:.1f}% dengan pertimbangan utama: aspek nilai yang ditawarkan produk, konsistensi kualitas berdasarkan pengalaman pengguna, dan potensi risiko yang perlu diperhatikan.",
+    "pros": ["Keunggulan dari sudut pandang nilai", "Kualitas yang konsisten berdasarkan review", "Faktor positif lainnya"],
+    "cons": ["Kelemahan dari analisis risiko", "Aspek yang perlu diperhatikan", "Pertimbangan negatif lainnya"],
+    "key_insights": ["Insight strategis untuk keputusan pembelian", "Pertimbangan dari berbagai perspektif", "Rekomendasi berbasis analisis komprehensif"],
+    "comprehensive_analysis": "Analisis mendalam yang mempertimbangkan semua aspek: nilai produk vs harga, kualitas berdasarkan pengalaman pengguna, tingkat kepuasan pelanggan, potensi risiko, dan strategi pembelian yang optimal. Memberikan pertimbangan dari berbagai sudut pandang untuk membantu calon pembeli.",
+    "key_considerations": ["Pertimbangan utama dari aspek nilai", "Pertimbangan kualitas dan performa", "Pertimbangan risiko dan mitigasi"],
+    "buyer_advice": "Saran spesifik berdasarkan analisis komprehensif dan profil pembeli",
+    "risk_assessment": "Penilaian risiko dari berbagai aspek dan cara mitigasinya",
+    "value_proposition": "Analisis proposisi nilai dari perspektif pembeli",
+    "strategic_insights": ["Insight untuk optimasi keputusan", "Pertimbangan timing pembelian", "Analisis alternatif"],
+    "budget_analysis": "Analisis kesesuaian dengan budget dan optimasi nilai"
 }}
 
 KRITERIA CONFIDENCE SCORE:
-- 0.85-1.0: Review sangat konsisten, rating tinggi, sentimen positif dominan
-- 0.70-0.84: Review mayoritas positif, beberapa kelemahan minor
-- 0.55-0.69: Review campur, perlu pertimbangan lebih lanjut
-- 0.40-0.54: Review banyak negatif, risiko tinggi
-- 0.0-0.39: Review sangat negatif, tidak direkomendasikan
+- 0.85-1.0: Analisis sangat komprehensif, data konsisten, risiko rendah
+- 0.70-0.84: Analisis baik, beberapa pertimbangan minor
+- 0.55-0.69: Analisis cukup, perlu pertimbangan lebih lanjut
+- 0.40-0.54: Analisis menunjukkan risiko tinggi
+- 0.0-0.39: Analisis menunjukkan tidak direkomendasikan
 
 KRITERIA REKOMENDASI:
-- LAYAK_BELI: Rating >4.5, sentimen positif >70%, tema positif kuat, risiko rendah
-- TIDAK_LAYAK_BELI: Rating <4.0, sentimen negatif >50%, tema negatif dominan, risiko tinggi
-- LAYAK_BELI_DENGAN_CATATAN: Rating 4.0-4.5, sentimen campuran, ada pertimbangan khusus
+- LAYAK_BELI: Nilai bagus, kualitas konsisten, risiko rendah, strategis untuk dibeli
+- TIDAK_LAYAK_BELI: Nilai buruk, kualitas tidak konsisten, risiko tinggi
+- LAYAK_BELI_DENGAN_CATATAN: Nilai cukup, ada pertimbangan khusus yang perlu diperhatikan
 
-Berikan analisis yang objektif dan sangat membantu berdasarkan data review yang komprehensif.
+Berikan analisis yang objektif dan sangat membantu berdasarkan pertimbangan komprehensif dari berbagai sudut pandang.
 """
     
     return prompt
@@ -718,7 +752,13 @@ async def get_flexible_ai_consultation(request: FlexibleAIRequest):
                 cons=ai_analysis["cons"],
                 key_insights=ai_analysis["key_insights"],
                 budget_analysis=ai_analysis.get("budget_analysis"),
-                sentiment_analysis=sentiment_data
+                sentiment_analysis=sentiment_data,
+                comprehensive_analysis=ai_analysis.get("comprehensive_analysis"),
+                key_considerations=ai_analysis.get("key_considerations"),
+                buyer_advice=ai_analysis.get("buyer_advice"),
+                risk_assessment=ai_analysis.get("risk_assessment"),
+                value_proposition=ai_analysis.get("value_proposition"),
+                strategic_insights=ai_analysis.get("strategic_insights")
             )
             
             print(f"✅ Analysis completed: {consultation_response.recommendation}")

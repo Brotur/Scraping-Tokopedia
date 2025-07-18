@@ -643,8 +643,19 @@ function displayAIRecommendation(aiAnalysis) {
         confidenceText.textContent = `${confidencePercent}%`;
     }
     
-    // Analysis text
-    analysisText.textContent = aiAnalysis.analysis;
+    // Analysis text - Use comprehensive analysis if available
+    if (aiAnalysis.comprehensive_analysis) {
+        analysisText.innerHTML = `
+            <div class="comprehensive-analysis">
+                <h4>🔍 Analisis Komprehensif</h4>
+                <div class="analysis-content">
+                    <p>${aiAnalysis.comprehensive_analysis}</p>
+                </div>
+            </div>
+        `;
+    } else {
+        analysisText.textContent = aiAnalysis.analysis;
+    }
     
     // Add confidence animation
     setTimeout(() => {
@@ -698,6 +709,27 @@ function getRiskLevel(percentage) {
 
 // Display analysis details
 function displayAnalysisDetails(aiAnalysis) {
+    // Display comprehensive analysis sections if available
+    if (aiAnalysis.key_considerations && aiAnalysis.key_considerations.length > 0) {
+        displayKeyConsiderations(aiAnalysis.key_considerations);
+    }
+    
+    if (aiAnalysis.buyer_advice) {
+        displayBuyerAdvice(aiAnalysis.buyer_advice);
+    }
+    
+    if (aiAnalysis.risk_assessment) {
+        displayRiskAssessment(aiAnalysis.risk_assessment);
+    }
+    
+    if (aiAnalysis.value_proposition) {
+        displayValueProposition(aiAnalysis.value_proposition);
+    }
+    
+    if (aiAnalysis.strategic_insights && aiAnalysis.strategic_insights.length > 0) {
+        displayStrategicInsights(aiAnalysis.strategic_insights);
+    }
+    
     // Pros
     const prosList = document.getElementById('prosList');
     prosList.innerHTML = '';
@@ -753,6 +785,91 @@ function displayAnalysisDetails(aiAnalysis) {
     } else {
         budgetCard.style.display = 'none';
     }
+}
+
+// Display key considerations
+function displayKeyConsiderations(considerations) {
+    const container = document.getElementById('keyConsiderations');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="key-considerations-section">
+            <h4>⚠️ Pertimbangan Penting</h4>
+            <div class="considerations-list">
+                ${considerations.map(consideration => `
+                    <div class="consideration-item">
+                        <div class="consideration-icon">💡</div>
+                        <div class="consideration-text">${consideration}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Display buyer advice
+function displayBuyerAdvice(advice) {
+    const container = document.getElementById('buyerAdvice');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="buyer-advice-section">
+            <h4>🎯 Saran untuk Pembeli</h4>
+            <div class="advice-content">
+                <p>${advice}</p>
+            </div>
+        </div>
+    `;
+}
+
+// Display risk assessment
+function displayRiskAssessment(assessment) {
+    const container = document.getElementById('riskAssessment');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="risk-assessment-section">
+            <h4>⚠️ Penilaian Risiko</h4>
+            <div class="risk-content">
+                <p>${assessment}</p>
+            </div>
+        </div>
+    `;
+}
+
+// Display value proposition
+function displayValueProposition(proposition) {
+    const container = document.getElementById('valueProposition');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="value-proposition-section">
+            <h4>💰 Proposisi Nilai</h4>
+            <div class="value-content">
+                <p>${proposition}</p>
+            </div>
+        </div>
+    `;
+}
+
+// Display strategic insights
+function displayStrategicInsights(insights) {
+    const container = document.getElementById('strategicInsights');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="strategic-insights-section">
+            <h4>📊 Insight Strategis</h4>
+            <div class="insights-list">
+                ${insights.map(insight => `
+                    <div class="insight-item">
+                        <div class="insight-icon">🔍</div>
+                        <div class="insight-text">${insight}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
 }
 
 // Format recommendation text

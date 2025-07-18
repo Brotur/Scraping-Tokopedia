@@ -1287,3 +1287,180 @@ input[type="text"]:focus {
         font-size: 0.8rem;
     }
 }
+
+/* Comprehensive Analysis Styles */
+.comprehensive-analysis-section {
+    margin-top: 30px;
+}
+
+.comprehensive-analysis {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-left: 5px solid #667eea;
+}
+
+.comprehensive-analysis h4 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.analysis-content {
+    line-height: 1.7;
+    color: #4a5568;
+}
+
+.key-considerations-section,
+.buyer-advice-section,
+.risk-assessment-section,
+.value-proposition-section,
+.strategic-insights-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-left: 5px solid #667eea;
+}
+
+.key-considerations-section h4,
+.buyer-advice-section h4,
+.risk-assessment-section h4,
+.value-proposition-section h4,
+.strategic-insights-section h4 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+}
+
+.considerations-list,
+.insights-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.consideration-item,
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.consideration-item:hover,
+.insight-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.consideration-icon,
+.insight-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+}
+
+.consideration-text,
+.insight-text {
+    flex: 1;
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+.advice-content,
+.risk-content,
+.value-content {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    line-height: 1.7;
+    color: #4a5568;
+}
+
+.risk-assessment-section {
+    border-left-color: #f56565;
+}
+
+.risk-assessment-section h4 {
+    color: #c53030;
+}
+
+.value-proposition-section {
+    border-left-color: #48bb78;
+}
+
+.value-proposition-section h4 {
+    color: #2f855a;
+}
+
+.buyer-advice-section {
+    border-left-color: #4299e1;
+}
+
+.buyer-advice-section h4 {
+    color: #2b6cb0;
+}
+
+.strategic-insights-section {
+    border-left-color: #ed8936;
+}
+
+.strategic-insights-section h4 {
+    color: #c05621;
+}
+
+/* Responsive Design for Comprehensive Analysis */
+@media (max-width: 768px) {
+    .comprehensive-analysis-section {
+        margin-top: 20px;
+    }
+    
+    .key-considerations-section,
+    .buyer-advice-section,
+    .risk-assessment-section,
+    .value-proposition-section,
+    .strategic-insights-section {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .consideration-item,
+    .insight-item {
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .consideration-icon,
+    .insight-icon {
+        width: 25px;
+        height: 25px;
+        font-size: 0.9rem;
+    }
+    
+    .advice-content,
+    .risk-content,
+    .value-content {
+        padding: 15px;
+    }
+}
