@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Shopping Consultant - Tokopedia Product Analyzer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-robot"></i> AI Shopping Consultant</h1>
+            <p>Analisis produk Tokopedia dengan kecerdasan buatan untuk keputusan belanja yang lebih baik</p>
+        </header>
+
+        <!-- Input Form -->
+        <div class="input-section">
+            <div class="card">
+                <h2><i class="fas fa-link"></i> Analisis Produk Tokopedia</h2>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="productUrl">URL Produk Tokopedia:</label>
+                        <input type="url" id="productUrl" placeholder="https://www.tokopedia.com/..." required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userBudget">Budget (Opsional):</label>
+                            <input type="number" id="userBudget" placeholder="Rp 1,000,000">
+                        </div>
+                        <div class="form-group">
+                            <label for="userPreferences">Preferensi (Opsional):</label>
+                            <input type="text" id="userPreferences" placeholder="Contoh: Brand terkenal, garansi resmi">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-analyze" id="analyzeBtn">
+                        <i class="fas fa-search"></i> Analisis Produk
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Sedang menganalisis produk...</p>
+            <div class="loading-steps">
+                <div class="step" id="step1">📄 Mengambil data produk</div>
+                <div class="step" id="step2">🤖 Menganalisis dengan AI</div>
+                <div class="step" id="step3">📊 Menyiapkan rekomendasi</div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText"></span>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <!-- Product Info -->
+            <div class="card product-info">
+                <h3><i class="fas fa-box"></i> Informasi Produk</h3>
+                <div class="product-details">
+                    <div class="product-header">
+                        <h4 id="productName"></h4>
+                        <div class="product-price" id="productPrice"></div>
+                    </div>
+                    <div class="product-stats">
+                        <div class="stat">
+                            <i class="fas fa-star"></i>
+                            <span id="productRating"></span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-users"></i>
+                            <span id="productReviews"></span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="productSold"></span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-store"></i>
+                            <span id="storeInfo"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Recommendation -->
+            <div class="card recommendation-card">
+                <h3><i class="fas fa-brain"></i> Rekomendasi AI</h3>
+                <div class="recommendation-header">
+                    <div class="recommendation-badge" id="recommendationBadge"></div>
+                    <div class="confidence-score">
+                        <span>Tingkat Kepercayaan:</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceFill"></div>
+                        </div>
+                        <span id="confidenceText"></span>
+                    </div>
+                </div>
+                <div class="analysis-text" id="analysisText"></div>
+            </div>
+
+            <!-- Analysis Details -->
+            <div class="analysis-grid">
+                <!-- Pros -->
+                <div class="card analysis-card pros-card">
+                    <h4><i class="fas fa-thumbs-up"></i> Keunggulan</h4>
+                    <ul id="prosList"></ul>
+                </div>
+
+                <!-- Cons -->
+                <div class="card analysis-card cons-card">
+                    <h4><i class="fas fa-thumbs-down"></i> Kekurangan</h4>
+                    <ul id="consList"></ul>
+                </div>
+
+                <!-- Key Insights -->
+                <div class="card analysis-card insights-card">
+                    <h4><i class="fas fa-lightbulb"></i> Insight Penting</h4>
+                    <ul id="insightsList"></ul>
+                </div>
+
+                <!-- Budget Analysis -->
+                <div class="card analysis-card budget-card" id="budgetCard" style="display: none;">
+                    <h4><i class="fas fa-wallet"></i> Analisis Budget</h4>
+                    <p id="budgetAnalysis"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>🤖 Powered by Gemini AI | 🛒 Tokopedia Product Analyzer</p>
+        </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

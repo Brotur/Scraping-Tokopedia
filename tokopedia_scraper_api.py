@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware  # Add this import
 from pydantic import BaseModel, field_validator
 from typing import List, Optional
 import time
@@ -14,7 +15,16 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 # Import scraper class yang sudah ada
 from tokopedia_scraper_improved import TokopediaReviewScraperImproved
 
-app = FastAPI(title="Tokopedia Review Scraper Simple API", version="1.0.0")
+app = FastAPI(title="Tokopedia Review Scraper API", version="2.0.0")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify exact origins
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 # Pydantic model untuk request
 class ScrapeRequest(BaseModel):
