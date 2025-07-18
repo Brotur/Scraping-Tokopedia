@@ -17,22 +17,31 @@ def test_scraper_response():
     """Test the scraper API response format"""
     print("=== Testing Scraper API ===")
     try:
+        request_data = {
+            "url": TEST_PRODUCT_URL,
+            "target_ratings": [1, 2, 3, 4, 5],
+            "max_reviews_per_rating": 15,
+            "headless": False
+        }
+        
+        print("📤 Sending request to:", f"{SCRAPER_URL}/scrape-with-details")
+        print("📤 Request data:", json.dumps(request_data, indent=2))
+        
         response = requests.post(f"{SCRAPER_URL}/scrape-with-details", 
-                               json={
-                                   "url": TEST_PRODUCT_URL,
-                                   "target_ratings": [1, 2, 3, 4, 5],
-                                   "max_reviews_per_rating": 15,
-                                   "headless": False
-                               })
+                               json=request_data,
+                               timeout=120)  # 2 minutes timeout
+        
+        print("📥 Response status:", response.status_code)
+        print("📥 Response headers:", dict(response.headers))
         
         if response.status_code == 200:
             data = response.json()
             print("✅ Scraper API working!")
-            print("Response keys:", list(data.keys()))
+            print("📊 Response keys:", list(data.keys()))
             
             if "product_details" in data:
                 product_details = data["product_details"]
-                print("Product details keys:", list(product_details.keys()))
+                print("📊 Product details keys:", list(product_details.keys()))
                 
                 # Show the structure we'll use for AI consultant
                 print("\n=== Product Details Structure ===")
@@ -49,12 +58,20 @@ def test_scraper_response():
                 return product_details
             else:
                 print("❌ No product_details in response")
-                print("Available keys:", list(data.keys()))
+                print("📊 Available keys:", list(data.keys()))
+                print("📊 Full response:", json.dumps(data, indent=2))
                 return None
         else:
             print(f"❌ Scraper API error: {response.status_code}")
+            print("📊 Response text:", response.text)
             return None
             
+    except requests.exceptions.Timeout:
+        print("❌ Request timeout - server took too long to respond")
+        return None
+    except requests.exceptions.ConnectionError:
+        print("❌ Connection error - check if server is running on port 8000")
+        return None
     except Exception as e:
         print(f"❌ Error testing scraper: {e}")
         return None

@@ -120,93 +120,167 @@ async function analyzeProduct(productUrl, userBudget, userPreferences) {
         
         // Step 1: Extract product details
         activateLoadingStep(1);
+        console.log('🔍 Step 1: Extracting product details...');
+        
         const productData = await extractProductDetails(productUrl);
+        console.log('✅ Step 1 completed:', productData);
         
         // Step 2: Get AI analysis
         activateLoadingStep(2);
+        console.log('🤖 Step 2: Getting AI analysis...');
+        
         const aiAnalysis = await getAIAnalysis(productData, userBudget, userPreferences);
+        console.log('✅ Step 2 completed:', aiAnalysis);
         
         // Step 3: Display results
         activateLoadingStep(3);
+        console.log('📋 Step 3: Displaying results...');
+        
         displayResults(productData, aiAnalysis);
+        console.log('✅ All steps completed successfully');
         
         showResults();
         
     } catch (error) {
-        console.error('Analysis error:', error);
+        console.error('❌ Analysis error:', error);
         showError(error.message || 'Terjadi kesalahan saat menganalisis produk');
+    } finally {
+        hideLoading();
     }
 }
 
 // Extract product details from Tokopedia
 async function extractProductDetails(productUrl) {
     try {
-        // Use scrape-with-details endpoint to get comprehensive data
+        console.log('🔍 Extracting product details from:', productUrl);
+        
+        const requestPayload = {
+            url: productUrl,
+            target_ratings: [1, 2, 3, 4, 5],
+            max_reviews_per_rating: 15,
+            headless: false
+        };
+        
+        console.log('📤 Request payload:', requestPayload);
+        
         const response = await fetch(`${API_BASE_URL}/scrape-with-details`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                url: productUrl,
-                target_ratings: [1, 2, 3, 4, 5],
-                max_reviews_per_rating: 15,
-                headless: false
-            })
+            body: JSON.stringify(requestPayload)
         });
         
+        console.log('📥 Response status:', response.status);
+        console.log('📥 Response ok:', response.ok);
+        
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.detail || `HTTP ${response.status}: Gagal mengambil data produk`);
+            const errorText = await response.text();
+            console.error('❌ Response error:', errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
         
         const data = await response.json();
+        console.log('📊 Full response data:', data);
+        console.log('📊 Response keys:', Object.keys(data));
         
-        // Check if we have product_details in the response
+        // Check if we have product_details
         if (!data.product_details) {
-            throw new Error('Data produk tidak ditemukan dalam response');
+            console.error('❌ No product_details in response');
+            console.log('Available keys:', Object.keys(data));
+            throw new Error('Response tidak mengandung product_details');
         }
         
-        // Return the product_details from scrape-with-details response
-        return data.product_details;
+        const productDetails = data.product_details;
+        console.log('✅ Product details found:', productDetails);
+        console.log('✅ Product details keys:', Object.keys(productDetails));
+        
+        // Validate essential fields
+        const essentialFields = ['product_name', 'price', 'rating'];
+        const missingFields = essentialFields.filter(field => !productDetails[field]);
+        
+        if (missingFields.length > 0) {
+            console.warn('⚠️ Missing essential fields:', missingFields);
+            // But don't throw error, just warn
+        }
+        
+        return productDetails;
         
     } catch (error) {
+        console.error('❌ Error in extractProductDetails:', error);
+        
+        // Provide more detailed error information
         if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            throw new Error('Tidak dapat terhubung ke server. Pastikan API scraper berjalan di port 8000');
+            throw new Error('Tidak dapat terhubung ke server scraper. Pastikan server berjalan di http://localhost:8000');
         }
-        throw error;
+        
+        if (error.message.includes('HTTP')) {
+            throw new Error(`Server error: ${error.message}`);
+        }
+        
+        throw new Error(`Gagal mengekstrak data produk: ${error.message}`);
     }
 }
 
 // Get AI analysis
 async function getAIAnalysis(productData, userBudget, userPreferences) {
     try {
-        const requestData = {
-            product_data: {
-                name: productData.product_name || 'Tidak tersedia',
-                price: productData.price || 'Tidak tersedia',
-                rating: productData.rating || 0,
-                total_ratings: productData.rating_count || 0,
-                sold_count: productData.sold_count || 'Tidak tersedia',
-                store_type: productData.store_name || 'Tidak tersedia',
-                store_rating: productData.store_rating || 0,
-                store_reviews: productData.store_reviews || 0,
-                processing_time: productData.processing_time || 'Tidak tersedia',
-                description: productData.description || 'Tidak tersedia',
-                url: productData.product_url || productData.review_url || ''
-            }
-        };
+        console.log('🔍 Preparing AI analysis request...');
+        console.log('📊 Product data received:', productData);
+        
+        // Check if we have the new format (product_details from scraping)
+        const hasProductDetails = productData.product_name && productData.store_name;
+        
+        let requestData;
+        
+        if (hasProductDetails) {
+            // New format - direct from scraping response
+            console.log('📊 Using new format with product_details');
+            requestData = {
+                product_details: {
+                    product_name: productData.product_name,
+                    store_name: productData.store_name,
+                    product_url: productData.product_url || '',
+                    price: productData.price,
+                    rating: productData.rating,
+                    rating_count: productData.rating_count,
+                    sold_count: productData.sold_count,
+                    description: productData.description || 'Tidak tersedia'
+                }
+            };
+        } else {
+            // Old format - fallback for compatibility
+            console.log('📊 Using old format with product_data');
+            requestData = {
+                product_data: {
+                    name: productData.product_name || 'Tidak tersedia',
+                    price: productData.price || 'Tidak tersedia',
+                    rating: productData.rating || 0,
+                    total_ratings: productData.rating_count || 0,
+                    sold_count: productData.sold_count || 'Tidak tersedia',
+                    store_type: productData.store_name || 'Tidak tersedia',
+                    store_rating: productData.store_rating || 0,
+                    store_reviews: productData.store_reviews || 0,
+                    processing_time: productData.processing_time || 'Tidak tersedia',
+                    description: productData.description || 'Tidak tersedia',
+                    url: productData.product_url || productData.review_url || ''
+                }
+            };
+        }
         
         // Add optional fields if provided
-        if (userBudget && !isNaN(parseFloat(userBudget))) {
-            requestData.user_budget = parseFloat(userBudget);
+        if (userBudget && !isNaN(parseFloat(userBudget.replace(/\D/g, '')))) {
+            requestData.user_budget = parseFloat(userBudget.replace(/\D/g, ''));
         }
         
         if (userPreferences) {
             requestData.user_preferences = userPreferences;
         }
         
-        const response = await fetch(`${AI_API_BASE_URL}/ai-consultant`, {
+        console.log('📤 AI request data:', requestData);
+        
+        // Use the flexible endpoint that can handle both formats
+        const response = await fetch(`${AI_API_BASE_URL}/ai-consultant-flexible`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -214,14 +288,28 @@ async function getAIAnalysis(productData, userBudget, userPreferences) {
             body: JSON.stringify(requestData)
         });
         
+        console.log('📥 AI response status:', response.status);
+        
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.detail || `HTTP ${response.status}: Gagal mendapatkan analisis AI`);
+            const errorText = await response.text();
+            console.error('❌ AI API error response:', errorText);
+            
+            try {
+                const errorData = JSON.parse(errorText);
+                throw new Error(errorData.detail || `HTTP ${response.status}: ${errorText}`);
+            } catch (parseError) {
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
         }
         
-        return await response.json();
+        const aiResult = await response.json();
+        console.log('✅ AI analysis completed:', aiResult);
+        
+        return aiResult;
         
     } catch (error) {
+        console.error('❌ Error in getAIAnalysis:', error);
+        
         if (error.name === 'TypeError' && error.message.includes('fetch')) {
             throw new Error('Tidak dapat terhubung ke AI consultant. Pastikan AI API berjalan di port 8001');
         }
@@ -243,26 +331,33 @@ function displayResults(productData, aiAnalysis) {
 
 // Display product information
 function displayProductInfo(productData) {
-    // Map fields from scrape-with-details response
-    document.getElementById('productName').textContent = 
-        productData.product_name || 'Nama produk tidak tersedia';
+    console.log('📊 Displaying product info:', productData);
     
-    document.getElementById('productPrice').textContent = 
-        productData.price || 'Harga tidak tersedia';
+    // Product name dengan fallback
+    const productName = productData.product_name || 'Nama produk tidak tersedia';
+    document.getElementById('productName').textContent = productName;
     
-    // Product stats
-    document.getElementById('productRating').textContent = 
-        productData.rating ? `${productData.rating} ⭐` : 'Rating tidak tersedia';
+    // Price dengan fallback
+    const price = productData.price || 'Harga tidak tersedia';
+    document.getElementById('productPrice').textContent = price;
     
-    document.getElementById('productReviews').textContent = 
-        productData.rating_count ? `${productData.rating_count}` : 'Ulasan tidak tersedia';
+    // Rating dengan fallback
+    const rating = productData.rating ? `${productData.rating} ⭐` : 'Rating tidak tersedia';
+    document.getElementById('productRating').textContent = rating;
     
-    document.getElementById('productSold').textContent = 
-        productData.sold_count ? `${productData.sold_count}` : 'Data penjualan tidak tersedia';
+    // Reviews dengan fallback
+    const reviews = productData.rating_count || 'Ulasan tidak tersedia';
+    document.getElementById('productReviews').textContent = reviews;
     
-    // Store information
-    document.getElementById('storeInfo').textContent = 
-        productData.store_name || 'Info toko tidak tersedia';
+    // Sold count dengan fallback
+    const sold = productData.sold_count || 'Data penjualan tidak tersedia';
+    document.getElementById('productSold').textContent = sold;
+    
+    // Store info dengan fallback
+    const storeName = productData.store_name || 'Info toko tidak tersedia';
+    document.getElementById('storeInfo').textContent = storeName;
+    
+    console.log('✅ Product info displayed successfully');
 }
 
 // Display AI recommendation

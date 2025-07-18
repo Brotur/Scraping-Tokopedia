@@ -1,0 +1,42 @@
+{
+  "product_details": {
+    "product_name": "HUAWEI MatePad 11.5\"S PaperMatte Edition Tablet [8+256GB]",
+    "store_name": "Huawei Indonesia",
+    "product_url": "https://www.tokopedia.com/huawei/huawei-matepad-11-5-s-papermatte-edition-tablet",
+    "price": "Rp6.999.000",
+    "rating": "4.9",
+    "rating_count": "(1.066 rating)",
+    "sold_count": "Terjual 2 rb+",
+    "description": "HUAWEI MatePad 11.5\"S PaperMatte Edition Tablet [8+256GB] | NearLink Accessories"
+  },
+  "reviews": [
+    {
+      "rating": 5,
+      "reviewer_name": "Dimas",
+      "review_text": "Barang sesuai pesanan, dapat bonus Mpencil dan keyboard sesuai di foto, pengiriman cepat, berfungsi dengan baik",
+      "review_date": "9 bulan lalu",
+      "variant": "Violet"
+    },
+    {
+      "rating": 1,
+      "reviewer_name": "iqwan",
+      "review_text": "Pengiriman sangat lama. Walaupun diluar pihak penjual, tetapi ini mempengaruhi pelayanan terjadap konsumen",
+      "review_date": "9 bulan lalu",
+      "variant": "Space Grey"
+    }
+  ],
+  "summary": {
+    "total_reviews_scraped": 62,
+    "target_ratings": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "max_reviews_per_rating": 15,
+    "scraped_at": "2025-07-18T16:35:37.971693"
+  },
+  "user_budget": 7000000,
+  "user_preferences": "Tablet untuk drawing dan produktivitas"
+}
