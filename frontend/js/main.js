@@ -195,6 +195,19 @@ async function extractProductDetails(productUrl) {
         console.log('✅ Product details found:', productDetails);
         console.log('✅ Product details keys:', Object.keys(productDetails));
         
+        // Also include reviews and summary for enhanced AI analysis
+        const fullData = {
+            product_details: productDetails,
+            reviews: data.reviews || [],
+            summary: data.summary || {}
+        };
+        
+        console.log('✅ Full scraping data:', {
+            product_details: 'included',
+            reviews: fullData.reviews.length,
+            summary: fullData.summary ? 'included' : 'not available'
+        });
+        
         // Validate essential fields
         const essentialFields = ['product_name', 'price', 'rating'];
         const missingFields = essentialFields.filter(field => !productDetails[field]);
@@ -204,7 +217,7 @@ async function extractProductDetails(productUrl) {
             // But don't throw error, just warn
         }
         
-        return productDetails;
+        return fullData;
         
     } catch (error) {
         console.error('❌ Error in extractProductDetails:', error);
@@ -223,49 +236,73 @@ async function extractProductDetails(productUrl) {
 }
 
 // Get AI analysis
-async function getAIAnalysis(productData, userBudget, userPreferences) {
+async function getAIAnalysis(scrapingData, userBudget, userPreferences) {
     try {
         console.log('🔍 Preparing AI analysis request...');
-        console.log('📊 Product data received:', productData);
+        console.log('📊 Scraping data received:', scrapingData);
         
-        // Check if we have the new format (product_details from scraping)
-        const hasProductDetails = productData.product_name && productData.store_name;
+        // Extract product details
+        const productDetails = scrapingData.product_details || scrapingData;
+        
+        // Check if we have the new format with full scraping data
+        const hasFullData = scrapingData.product_details && scrapingData.reviews;
         
         let requestData;
         
-        if (hasProductDetails) {
-            // New format - direct from scraping response
-            console.log('📊 Using new format with product_details');
+        if (hasFullData) {
+            // New format - use full scraping response with reviews
+            console.log('📊 Using enhanced format with reviews');
+            console.log('📊 Reviews count:', scrapingData.reviews.length);
+            
             requestData = {
                 product_details: {
-                    product_name: productData.product_name,
-                    store_name: productData.store_name,
-                    product_url: productData.product_url || '',
-                    price: productData.price,
-                    rating: productData.rating,
-                    rating_count: productData.rating_count,
-                    sold_count: productData.sold_count,
-                    description: productData.description || 'Tidak tersedia'
-                }
+                    product_name: productDetails.product_name,
+                    store_name: productDetails.store_name,
+                    product_url: productDetails.product_url || '',
+                    price: productDetails.price,
+                    rating: productDetails.rating,
+                    rating_count: productDetails.rating_count,
+                    sold_count: productDetails.sold_count,
+                    description: productDetails.description || 'Tidak tersedia'
+                },
+                reviews: scrapingData.reviews,
+                summary: scrapingData.summary
             };
         } else {
-            // Old format - fallback for compatibility
-            console.log('📊 Using old format with product_data');
-            requestData = {
-                product_data: {
-                    name: productData.product_name || 'Tidak tersedia',
-                    price: productData.price || 'Tidak tersedia',
-                    rating: productData.rating || 0,
-                    total_ratings: productData.rating_count || 0,
-                    sold_count: productData.sold_count || 'Tidak tersedia',
-                    store_type: productData.store_name || 'Tidak tersedia',
-                    store_rating: productData.store_rating || 0,
-                    store_reviews: productData.store_reviews || 0,
-                    processing_time: productData.processing_time || 'Tidak tersedia',
-                    description: productData.description || 'Tidak tersedia',
-                    url: productData.product_url || productData.review_url || ''
-                }
-            };
+            // Fallback format
+            console.log('📊 Using fallback format');
+            const hasProductDetails = productDetails.product_name && productDetails.store_name;
+            
+            if (hasProductDetails) {
+                requestData = {
+                    product_details: {
+                        product_name: productDetails.product_name,
+                        store_name: productDetails.store_name,
+                        product_url: productDetails.product_url || '',
+                        price: productDetails.price,
+                        rating: productDetails.rating,
+                        rating_count: productDetails.rating_count,
+                        sold_count: productDetails.sold_count,
+                        description: productDetails.description || 'Tidak tersedia'
+                    }
+                };
+            } else {
+                requestData = {
+                    product_data: {
+                        name: productDetails.product_name || 'Tidak tersedia',
+                        price: productDetails.price || 'Tidak tersedia',
+                        rating: productDetails.rating || 0,
+                        total_ratings: productDetails.rating_count || 0,
+                        sold_count: productDetails.sold_count || 'Tidak tersedia',
+                        store_type: productDetails.store_name || 'Tidak tersedia',
+                        store_rating: productDetails.store_rating || 0,
+                        store_reviews: productDetails.store_reviews || 0,
+                        processing_time: productDetails.processing_time || 'Tidak tersedia',
+                        description: productDetails.description || 'Tidak tersedia',
+                        url: productDetails.product_url || productDetails.review_url || ''
+                    }
+                };
+            }
         }
         
         // Add optional fields if provided
@@ -330,8 +367,11 @@ function displayResults(productData, aiAnalysis) {
 }
 
 // Display product information
-function displayProductInfo(productData) {
-    console.log('📊 Displaying product info:', productData);
+function displayProductInfo(scrapingData) {
+    console.log('📊 Displaying product info:', scrapingData);
+    
+    // Extract product details from the scraping data
+    const productData = scrapingData.product_details || scrapingData;
     
     // Product name dengan fallback
     const productName = productData.product_name || 'Nama produk tidak tersedia';
@@ -357,10 +397,34 @@ function displayProductInfo(productData) {
     const storeName = productData.store_name || 'Info toko tidak tersedia';
     document.getElementById('storeInfo').textContent = storeName;
     
+    // Add review analysis info if available
+    if (scrapingData.reviews && scrapingData.reviews.length > 0) {
+        const reviewAnalysisElement = document.getElementById('reviewAnalysis');
+        if (reviewAnalysisElement) {
+            const reviewCount = scrapingData.reviews.length;
+            const ratingDistribution = {};
+            
+            scrapingData.reviews.forEach(review => {
+                ratingDistribution[review.rating] = (ratingDistribution[review.rating] || 0) + 1;
+            });
+            
+            reviewAnalysisElement.innerHTML = `
+                <div class="review-analysis">
+                    <h4>📊 Analisis Review (${reviewCount} ulasan)</h4>
+                    <div class="rating-distribution">
+                        ${Object.entries(ratingDistribution).map(([rating, count]) => 
+                            `<span class="rating-item">★${rating}: ${count}</span>`
+                        ).join(' ')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
     console.log('✅ Product info displayed successfully');
 }
 
-// Display AI recommendation
+// Display AI recommendation with enhanced confidence visualization
 function displayAIRecommendation(aiAnalysis) {
     const recommendationBadge = document.getElementById('recommendationBadge');
     const confidenceFill = document.getElementById('confidenceFill');
@@ -371,13 +435,117 @@ function displayAIRecommendation(aiAnalysis) {
     recommendationBadge.textContent = formatRecommendation(aiAnalysis.recommendation);
     recommendationBadge.className = `recommendation-badge ${aiAnalysis.recommendation.toLowerCase().replace(/_/g, '-')}`;
     
-    // Confidence score
+    // Enhanced confidence score visualization
     const confidencePercent = Math.round(aiAnalysis.confidence_score * 100);
-    confidenceFill.style.width = `${confidencePercent}%`;
-    confidenceText.textContent = `${confidencePercent}%`;
+    const confidenceContainer = document.getElementById('confidenceContainer');
+    
+    // Create enhanced confidence display
+    if (confidenceContainer) {
+        confidenceContainer.innerHTML = `
+            <div class="confidence-display">
+                <div class="confidence-header">
+                    <h3>🎯 Tingkat Kepercayaan AI</h3>
+                    <div class="confidence-score ${getConfidenceClass(confidencePercent)}">
+                        ${confidencePercent}%
+                    </div>
+                </div>
+                
+                <div class="confidence-bar-container">
+                    <div class="confidence-bar">
+                        <div class="confidence-fill ${getConfidenceClass(confidencePercent)}" 
+                             style="width: ${confidencePercent}%; transition: width 1.5s ease-out;">
+                        </div>
+                        <div class="confidence-markers">
+                            <div class="marker" style="left: 25%">25%</div>
+                            <div class="marker" style="left: 50%">50%</div>
+                            <div class="marker" style="left: 75%">75%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="confidence-interpretation">
+                    <div class="confidence-label">
+                        <span class="confidence-icon">${getConfidenceIcon(confidencePercent)}</span>
+                        <span class="confidence-text">${getConfidenceText(confidencePercent)}</span>
+                    </div>
+                    <div class="confidence-description">
+                        ${getConfidenceDescription(confidencePercent)}
+                    </div>
+                </div>
+                
+                <div class="confidence-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Akurasi Prediksi</span>
+                        <span class="metric-value">${confidencePercent}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Basis Analisis</span>
+                        <span class="metric-value">AI + Review Data</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Tingkat Risiko</span>
+                        <span class="metric-value">${getRiskLevel(confidencePercent)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        // Fallback for existing elements
+        confidenceFill.style.width = `${confidencePercent}%`;
+        confidenceText.textContent = `${confidencePercent}%`;
+    }
     
     // Analysis text
     analysisText.textContent = aiAnalysis.analysis;
+    
+    // Add confidence animation
+    setTimeout(() => {
+        const fill = document.querySelector('.confidence-fill');
+        if (fill) {
+            fill.style.width = `${confidencePercent}%`;
+        }
+    }, 500);
+}
+
+// Helper functions for confidence display
+function getConfidenceClass(percentage) {
+    if (percentage >= 85) return 'confidence-very-high';
+    if (percentage >= 70) return 'confidence-high';
+    if (percentage >= 55) return 'confidence-medium';
+    if (percentage >= 40) return 'confidence-low';
+    return 'confidence-very-low';
+}
+
+function getConfidenceIcon(percentage) {
+    if (percentage >= 85) return '🚀';
+    if (percentage >= 70) return '✅';
+    if (percentage >= 55) return '⚖️';
+    if (percentage >= 40) return '⚠️';
+    return '❌';
+}
+
+function getConfidenceText(percentage) {
+    if (percentage >= 85) return 'Sangat Tinggi';
+    if (percentage >= 70) return 'Tinggi';
+    if (percentage >= 55) return 'Sedang';
+    if (percentage >= 40) return 'Rendah';
+    return 'Sangat Rendah';
+}
+
+function getConfidenceDescription(percentage) {
+    if (percentage >= 85) return 'AI sangat yakin dengan rekomendasi ini berdasarkan analisis mendalam data produk dan review pelanggan.';
+    if (percentage >= 70) return 'AI cukup yakin dengan rekomendasi ini berdasarkan data yang tersedia dan pola review positif.';
+    if (percentage >= 55) return 'AI memberikan rekomendasi dengan tingkat kepercayaan moderat. Pertimbangkan faktor tambahan.';
+    if (percentage >= 40) return 'AI memiliki keraguan dalam rekomendasi ini. Disarankan untuk riset lebih lanjut.';
+    return 'AI tidak yakin dengan rekomendasi ini. Sebaiknya cari alternatif produk lain.';
+}
+
+function getRiskLevel(percentage) {
+    if (percentage >= 85) return 'Sangat Rendah';
+    if (percentage >= 70) return 'Rendah';
+    if (percentage >= 55) return 'Sedang';
+    if (percentage >= 40) return 'Tinggi';
+    return 'Sangat Tinggi';
 }
 
 // Display analysis details

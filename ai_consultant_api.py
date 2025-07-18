@@ -191,38 +191,80 @@ Berikan analisis yang objektif dan membantu pengambilan keputusan.
     return prompt
 
 def create_enhanced_analysis_prompt(product_details: ScrapingProductDetails, reviews: Optional[List[ReviewData]] = None, summary: Optional[ScrapingSummary] = None, user_budget: Optional[float] = None, user_preferences: Optional[str] = None) -> str:
-    """Create enhanced prompt with full scraping data including reviews"""
+    """Create enhanced prompt with full scraping data including comprehensive review analysis"""
     
-    # Analyze review sentiment
+    # Comprehensive review analysis
     review_analysis = ""
     if reviews:
-        # Count ratings
+        # Detailed review statistics
         rating_counts = {}
-        positive_reviews = []
-        negative_reviews = []
+        sentiment_analysis = {
+            'positive': [],
+            'negative': [],
+            'neutral': []
+        }
         
-        for review in reviews[:20]:  # Limit to first 20 reviews for token efficiency
+        # Common themes and keywords
+        positive_keywords = []
+        negative_keywords = []
+        
+        for review in reviews:
             rating = review.rating
             rating_counts[rating] = rating_counts.get(rating, 0) + 1
             
+            # Categorize reviews by sentiment
             if rating >= 4:
-                positive_reviews.append(review.review_text[:200])
+                sentiment_analysis['positive'].append(review.review_text[:150])
+                # Extract positive keywords from review
+                positive_keywords.extend(extract_keywords(review.review_text, positive=True))
             elif rating <= 2:
-                negative_reviews.append(review.review_text[:200])
+                sentiment_analysis['negative'].append(review.review_text[:150])
+                # Extract negative keywords from review
+                negative_keywords.extend(extract_keywords(review.review_text, positive=False))
+            else:
+                sentiment_analysis['neutral'].append(review.review_text[:150])
+        
+        # Calculate sentiment percentages
+        total_reviews = len(reviews)
+        positive_percentage = (len(sentiment_analysis['positive']) / total_reviews) * 100
+        negative_percentage = (len(sentiment_analysis['negative']) / total_reviews) * 100
+        neutral_percentage = (len(sentiment_analysis['neutral']) / total_reviews) * 100
+        
+        # Top positive and negative themes
+        top_positive_themes = get_top_themes(sentiment_analysis['positive'])
+        top_negative_themes = get_top_themes(sentiment_analysis['negative'])
         
         review_analysis = f"""
-ANALISIS REVIEW ({len(reviews)} total reviews):
-Distribusi Rating: {rating_counts}
+ANALISIS KOMPREHENSIF REVIEW ({total_reviews} ulasan):
 
-SAMPLE REVIEW POSITIF:
-{chr(10).join([f"- {review}" for review in positive_reviews[:5]])}
+DISTRIBUSI RATING:
+{chr(10).join([f"★{rating}: {count} ulasan ({(count/total_reviews)*100:.1f}%)" for rating, count in sorted(rating_counts.items(), reverse=True)])}
 
-SAMPLE REVIEW NEGATIF:
-{chr(10).join([f"- {review}" for review in negative_reviews[:5]])}
+SENTIMEN PELANGGAN:
+- Positif (★4-5): {positive_percentage:.1f}% ({len(sentiment_analysis['positive'])} ulasan)
+- Netral (★3): {neutral_percentage:.1f}% ({len(sentiment_analysis['neutral'])} ulasan)
+- Negatif (★1-2): {negative_percentage:.1f}% ({len(sentiment_analysis['negative'])} ulasan)
+
+TEMA UTAMA POSITIF:
+{chr(10).join([f"- {theme}" for theme in top_positive_themes[:5]])}
+
+TEMA UTAMA NEGATIF:
+{chr(10).join([f"- {theme}" for theme in top_negative_themes[:5]])}
+
+SAMPLE REVIEW POSITIF (Rating 4-5):
+{chr(10).join([f"• {review}" for review in sentiment_analysis['positive'][:3]])}
+
+SAMPLE REVIEW NEGATIF (Rating 1-2):
+{chr(10).join([f"• {review}" for review in sentiment_analysis['negative'][:3]])}
+
+INSIGHT DARI REVIEW:
+- Kepuasan pelanggan: {get_satisfaction_level(positive_percentage)}
+- Konsistensi kualitas: {get_consistency_level(rating_counts)}
+- Faktor risiko: {get_risk_factors(sentiment_analysis['negative'])}
 """
     
     prompt = f"""
-Analisis produk Tokopedia berikut sebagai konsultan belanja AI yang berpengalaman dengan data lengkap:
+Analisis produk Tokopedia berikut sebagai konsultan belanja AI yang berpengalaman dengan data review komprehensif:
 
 INFORMASI PRODUK:
 - Nama: {product_details.product_name}
@@ -240,34 +282,139 @@ PREFERENSI USER:
 - Budget: {f"Rp {user_budget:,.0f}" if user_budget else 'Tidak disebutkan'}
 - Preferensi: {user_preferences or 'Tidak disebutkan'}
 
+INSTRUKSI ANALISIS:
+1. Gunakan SEMUA data review untuk memberikan analisis yang akurat
+2. Pertimbangkan sentimen pelanggan dan tema utama dari review
+3. Berikan confidence score berdasarkan konsistensi review dan data
+4. Identifikasi pola positif dan negatif dari pengalaman pelanggan
+5. Pertimbangkan faktor risiko dari review negatif
+6. Berikan rekomendasi yang objektif dan berbasis data
+
 Berikan analisis mendalam dan rekomendasi pembelian dalam format JSON berikut:
 
 {{
     "recommendation": "LAYAK_BELI" | "TIDAK_LAYAK_BELI" | "LAYAK_BELI_DENGAN_CATATAN",
     "confidence_score": 0.85,
-    "analysis": "Analisis lengkap produk berdasarkan data yang tersedia dan review pelanggan...",
-    "pros": ["Keunggulan 1", "Keunggulan 2", "Keunggulan 3"],
-    "cons": ["Kekurangan 1", "Kekurangan 2"],
-    "key_insights": ["Insight penting 1", "Insight penting 2"],
-    "budget_analysis": "Analisis kesesuaian dengan budget user"
+    "analysis": "Analisis komprehensif berdasarkan {len(reviews) if reviews else 0} review pelanggan dan data produk. Tingkat kepuasan pelanggan mencapai {positive_percentage:.1f}% dengan tema positif utama: {', '.join(top_positive_themes[:3]) if reviews else 'data tidak tersedia'}. Namun perlu diperhatikan {', '.join(top_negative_themes[:2]) if reviews else 'belum ada review negatif'}.",
+    "pros": ["Keunggulan berdasarkan review positif", "Poin kuat dari analisis sentimen", "Faktor positif lainnya"],
+    "cons": ["Kekurangan berdasarkan review negatif", "Poin lemah dari analisis sentimen", "Faktor negatif lainnya"],
+    "key_insights": ["Insight penting dari analisis review komprehensif", "Pola yang ditemukan dari sentimen pelanggan", "Rekomendasi berbasis data review"],
+    "budget_analysis": "Analisis kesesuaian dengan budget user berdasarkan value yang diberikan dari review pelanggan"
 }}
 
-KRITERIA REKOMENDASI:
-- LAYAK_BELI: Rating >4.5, toko terpercaya, banyak terjual, harga wajar, review positif
-- TIDAK_LAYAK_BELI: Rating <4.0, toko kurang terpercaya, sedikit terjual, harga tidak wajar, banyak keluhan
-- LAYAK_BELI_DENGAN_CATATAN: Rating 4.0-4.5, ada pertimbangan khusus berdasarkan review
+KRITERIA CONFIDENCE SCORE:
+- 0.85-1.0: Review sangat konsisten, rating tinggi, sentimen positif dominan
+- 0.70-0.84: Review mayoritas positif, beberapa kelemahan minor
+- 0.55-0.69: Review campur, perlu pertimbangan lebih lanjut
+- 0.40-0.54: Review banyak negatif, risiko tinggi
+- 0.0-0.39: Review sangat negatif, tidak direkomendasikan
 
-PETUNJUK ANALISIS:
-1. Gunakan data review untuk validasi kualitas produk
-2. Perhatikan pola keluhan dan pujian dari pembeli
-3. Fokus pada value for money dan kualitas produk
-4. Pertimbangkan kredibilitas toko dan track record
-5. Bandingkan dengan produk sejenis di pasar
-6. Berikan rekomendasi yang objektif berdasarkan data
-7. Gunakan bahasa Indonesia yang mudah dipahami
+KRITERIA REKOMENDASI:
+- LAYAK_BELI: Rating >4.5, sentimen positif >70%, tema positif kuat, risiko rendah
+- TIDAK_LAYAK_BELI: Rating <4.0, sentimen negatif >50%, tema negatif dominan, risiko tinggi
+- LAYAK_BELI_DENGAN_CATATAN: Rating 4.0-4.5, sentimen campuran, ada pertimbangan khusus
+
+Berikan analisis yang objektif dan sangat membantu berdasarkan data review yang komprehensif.
 """
     
     return prompt
+
+def extract_keywords(text: str, positive: bool = True) -> List[str]:
+    """Extract keywords from review text based on sentiment"""
+    text = text.lower()
+    
+    if positive:
+        positive_words = ['bagus', 'baik', 'mantap', 'recommended', 'puas', 'original', 'cepat', 'aman', 'lengkap', 'sesuai', 'keren', 'berkualitas', 'worth it']
+        return [word for word in positive_words if word in text]
+    else:
+        negative_words = ['jelek', 'buruk', 'lama', 'rusak', 'tidak', 'bukan', 'palsu', 'kecewa', 'komplain', 'bermasalah', 'minus', 'kurang']
+        return [word for word in negative_words if word in text]
+
+def get_top_themes(reviews: List[str]) -> List[str]:
+    """Extract common themes from reviews"""
+    if not reviews:
+        return []
+    
+    # Simple theme extraction based on common patterns
+    themes = []
+    for review in reviews:
+        review_lower = review.lower()
+        
+        # Quality themes
+        if any(word in review_lower for word in ['kualitas', 'bagus', 'baik', 'berkualitas']):
+            themes.append('Kualitas produk baik')
+        if any(word in review_lower for word in ['original', 'asli', 'ori']):
+            themes.append('Produk original/asli')
+        if any(word in review_lower for word in ['cepat', 'pengiriman', 'sampai']):
+            themes.append('Pengiriman cepat')
+        if any(word in review_lower for word in ['packing', 'kemasan', 'packaging']):
+            themes.append('Kemasan/packing')
+        if any(word in review_lower for word in ['harga', 'murah', 'worth', 'sesuai']):
+            themes.append('Harga sesuai')
+        if any(word in review_lower for word in ['pelayanan', 'service', 'respon']):
+            themes.append('Pelayanan')
+        if any(word in review_lower for word in ['rusak', 'cacat', 'defect']):
+            themes.append('Produk rusak/cacat')
+        if any(word in review_lower for word in ['lama', 'lambat', 'telat']):
+            themes.append('Pengiriman lambat')
+    
+    # Count and return top themes
+    from collections import Counter
+    theme_counts = Counter(themes)
+    return [theme for theme, count in theme_counts.most_common(10)]
+
+def get_satisfaction_level(positive_percentage: float) -> str:
+    """Get satisfaction level based on positive percentage"""
+    if positive_percentage >= 80:
+        return "Sangat Tinggi"
+    elif positive_percentage >= 60:
+        return "Tinggi"
+    elif positive_percentage >= 40:
+        return "Sedang"
+    elif positive_percentage >= 20:
+        return "Rendah"
+    else:
+        return "Sangat Rendah"
+
+def get_consistency_level(rating_counts: dict) -> str:
+    """Get consistency level based on rating distribution"""
+    if not rating_counts:
+        return "Tidak dapat dinilai"
+    
+    total = sum(rating_counts.values())
+    high_ratings = rating_counts.get(5, 0) + rating_counts.get(4, 0)
+    high_percentage = (high_ratings / total) * 100
+    
+    if high_percentage >= 80:
+        return "Sangat Konsisten"
+    elif high_percentage >= 60:
+        return "Konsisten"
+    elif high_percentage >= 40:
+        return "Cukup Konsisten"
+    else:
+        return "Tidak Konsisten"
+
+def get_risk_factors(negative_reviews: List[str]) -> str:
+    """Identify risk factors from negative reviews"""
+    if not negative_reviews:
+        return "Risiko minimal"
+    
+    risk_factors = []
+    for review in negative_reviews:
+        review_lower = review.lower()
+        
+        if any(word in review_lower for word in ['rusak', 'cacat', 'defect']):
+            risk_factors.append('Produk cacat/rusak')
+        if any(word in review_lower for word in ['palsu', 'fake', 'kw']):
+            risk_factors.append('Produk tidak original')
+        if any(word in review_lower for word in ['pengiriman', 'lama', 'lambat']):
+            risk_factors.append('Pengiriman lambat')
+        if any(word in review_lower for word in ['packing', 'kemasan', 'rusak']):
+            risk_factors.append('Kemasan tidak aman')
+        if any(word in review_lower for word in ['pelayanan', 'service', 'respon']):
+            risk_factors.append('Pelayanan kurang baik')
+    
+    return ', '.join(list(set(risk_factors))[:3]) if risk_factors else "Tidak ada faktor risiko utama"
 
 @app.post("/ai-consultant", response_model=ConsultationResponse)
 async def get_ai_consultation(request: AIConsultationRequest):
