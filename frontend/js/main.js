@@ -141,12 +141,18 @@ async function analyzeProduct(productUrl, userBudget, userPreferences) {
 // Extract product details from Tokopedia
 async function extractProductDetails(productUrl) {
     try {
-        const response = await fetch(`${API_BASE_URL}/product-details`, {
+        // Use scrape-with-details endpoint to get comprehensive data
+        const response = await fetch(`${API_BASE_URL}/scrape-with-details`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ url: productUrl })
+            body: JSON.stringify({
+                url: productUrl,
+                target_ratings: [1, 2, 3, 4, 5],
+                max_reviews_per_rating: 15,
+                headless: false
+            })
         });
         
         if (!response.ok) {
@@ -156,10 +162,12 @@ async function extractProductDetails(productUrl) {
         
         const data = await response.json();
         
-        if (!data.success) {
-            throw new Error('Gagal mengekstrak data produk');
+        // Check if we have product_details in the response
+        if (!data.product_details) {
+            throw new Error('Data produk tidak ditemukan dalam response');
         }
         
+        // Return the product_details from scrape-with-details response
         return data.product_details;
         
     } catch (error) {
@@ -175,17 +183,17 @@ async function getAIAnalysis(productData, userBudget, userPreferences) {
     try {
         const requestData = {
             product_data: {
-                name: productData.name || 'Tidak tersedia',
+                name: productData.product_name || 'Tidak tersedia',
                 price: productData.price || 'Tidak tersedia',
-                rating: productData.rating,
-                total_ratings: productData.total_ratings,
-                sold_count: productData.sold_count,
-                store_type: productData.store_type,
-                store_rating: productData.store_rating,
-                store_reviews: productData.store_reviews,
-                processing_time: productData.processing_time,
-                description: productData.description,
-                url: productData.url || ''
+                rating: productData.rating || 0,
+                total_ratings: productData.rating_count || 0,
+                sold_count: productData.sold_count || 'Tidak tersedia',
+                store_type: productData.store_name || 'Tidak tersedia',
+                store_rating: productData.store_rating || 0,
+                store_reviews: productData.store_reviews || 0,
+                processing_time: productData.processing_time || 'Tidak tersedia',
+                description: productData.description || 'Tidak tersedia',
+                url: productData.product_url || productData.review_url || ''
             }
         };
         
@@ -235,27 +243,26 @@ function displayResults(productData, aiAnalysis) {
 
 // Display product information
 function displayProductInfo(productData) {
-    document.getElementById('productName').textContent = productData.name || 'Nama produk tidak tersedia';
-    document.getElementById('productPrice').textContent = productData.price || 'Harga tidak tersedia';
+    // Map fields from scrape-with-details response
+    document.getElementById('productName').textContent = 
+        productData.product_name || 'Nama produk tidak tersedia';
+    
+    document.getElementById('productPrice').textContent = 
+        productData.price || 'Harga tidak tersedia';
     
     // Product stats
     document.getElementById('productRating').textContent = 
         productData.rating ? `${productData.rating} ⭐` : 'Rating tidak tersedia';
     
     document.getElementById('productReviews').textContent = 
-        productData.total_ratings ? `${productData.total_ratings} ulasan` : 'Ulasan tidak tersedia';
+        productData.rating_count ? `${productData.rating_count}` : 'Ulasan tidak tersedia';
     
     document.getElementById('productSold').textContent = 
-        productData.sold_count ? `${productData.sold_count} terjual` : 'Data penjualan tidak tersedia';
+        productData.sold_count ? `${productData.sold_count}` : 'Data penjualan tidak tersedia';
     
     // Store information
-    const storeInfo = [];
-    if (productData.store_type) storeInfo.push(productData.store_type);
-    if (productData.store_rating) storeInfo.push(`Rating: ${productData.store_rating}`);
-    if (productData.store_reviews) storeInfo.push(`${productData.store_reviews} ulasan`);
-    
     document.getElementById('storeInfo').textContent = 
-        storeInfo.length > 0 ? storeInfo.join(' • ') : 'Info toko tidak tersedia';
+        productData.store_name || 'Info toko tidak tersedia';
 }
 
 // Display AI recommendation
